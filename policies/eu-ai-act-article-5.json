@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "effective_date": "2024-08-01T00:00:00Z",
+  "metadata": {
+    "name": "EU AI Act - Article 5: Prohibited Practices",
+    "description": "Red line checks for prohibited AI practices. All rules are BLOCKING.",
+    "regulatory_source": "EU AI Act, Article 5"
+  },
+  "rules": [
+    {
+      "obligation_id": "EU_AI_ACT_ART_5",
+      "control_id": "ART_5_SOCIAL_SCORING",
+      "rule_id": "ART_5_NO_SOCIAL_SCORING",
+      "required_claims": ["system_classification"],
+      "parameters": {},
+      "logic": {
+        "!=": [
+          { "var": "system_classification.is_social_scoring" },
+          true
+        ]
+      },
+      "failure_mode": "BLOCK",
+      "description": "Social scoring systems are prohibited"
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_5",
+      "control_id": "ART_5_REAL_TIME_BIOMETRIC",
+      "rule_id": "ART_5_NO_REAL_TIME_BIOMETRIC",
+      "required_claims": ["system_classification"],
+      "parameters": {},
+      "logic": {
+        "or": [
+          {
+            "!=": [
+              { "var": "system_classification.is_real_time_biometric" },
+              true
+            ]
+          },
+          {
+            "==": [
+              { "var": "system_classification.is_real_time_biometric" },
+              false
+            ]
+          }
+        ]
+      },
+      "failure_mode": "BLOCK",
+      "description": "Real-time remote biometric identification is prohibited (with limited exceptions)"
+    }
+  ]
+}

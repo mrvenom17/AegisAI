@@ -1,0 +1,38 @@
+{
+  "name": "aegisai-compliance-engine",
+  "version": "1.0.0",
+  "description": "EU AI Act Compliance Engine - Deterministic, Policy-Driven Compliance Decision System",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "example": "tsc && node dist/examples/end-to-end-example.js",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "eu-ai-act",
+    "compliance",
+    "regulatory",
+    "audit"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "zod": "^3.22.4",
+    "json-logic-js": "^2.0.2",
+    "uuid": "^9.0.1",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.6",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
