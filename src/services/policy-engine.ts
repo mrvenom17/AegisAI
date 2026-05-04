@@ -1,234 +1,167 @@
 /**
- * Policy Engine Service
- * 
- * Pure function that evaluates policies deterministically.
- * Uses JSON-Logic for rule evaluation.
- * NEVER guesses or infers compliance.
+ * Policy Engine — pure deterministic evaluation.
+ *
+ * Fixes vs. v0:
+ * - Single evaluation pass per rule (no double-eval drift between
+ *   `evaluateRule` and `evaluate`).
+ * - `parameters_used` reflects the parameters actually applied to the logic.
+ * - `fail_on_missing` honoured per rule. Default = true (fail-closed for
+ *   regulatory red-line checks like Article 5).
+ * - `required_fields` enforces that named fields exist on a claim before
+ *   evaluation, preventing the "omit the field, slip past `!=`" bypass.
  */
 
-// @ts-ignore - json-logic-js has no type definitions
 import jsonLogic from 'json-logic-js';
+type RulesLogic = Parameters<typeof jsonLogic.apply>[0];
 import {
   VerifiedClaim,
   PolicyRule,
   ComplianceResult,
   ComplianceStatus,
   Warning,
-  RuleResult
+  RuleResult,
+  ComplianceResultSchema
 } from '../domain/types.js';
-import { ComplianceResultSchema } from '../domain/types.js';
-
-export interface PolicyEngineOptions {
-  // No options needed - pure function
-}
 
 export class PolicyEngine {
-  constructor(_options: PolicyEngineOptions = {}) {
-    // Pure function - no state
-  }
-
-  /**
-   * Evaluate policies against verified claims.
-   * 
-   * This is a PURE FUNCTION:
-   * - Same inputs always produce same outputs
-   * - No side effects
-   * - No external dependencies beyond verified claims
-   */
   evaluate(
     verifiedClaims: VerifiedClaim[],
     policyRules: PolicyRule[],
-    parameters: Record<string, unknown>
+    parameters: Record<string, unknown>,
+    now: () => string = () => new Date().toISOString()
   ): ComplianceResult {
     const ruleEvaluations: RuleResult[] = [];
     const warnings: Warning[] = [];
     let hasBlockingFailure = false;
     let hasNonBlockingFailure = false;
 
-    // Evaluate each rule
     for (const rule of policyRules) {
-      const evaluation = this.evaluateRule(rule, verifiedClaims, parameters);
-      ruleEvaluations.push(evaluation);
+      // Rule-specific parameters override globals (rule wins).
+      const mergedParameters: Record<string, unknown> = {
+        ...parameters,
+        ...rule.parameters
+      };
 
-      // Check for missing required claims
-      const missingClaims = this.checkMissingClaims(rule, verifiedClaims);
-      if (missingClaims.length > 0) {
-        // Missing required data = NON_COMPLIANT or BLOCKING
-        const failureMode = rule.failure_mode === 'BLOCK' ? 'BLOCK' : 'FAIL';
-        
-        if (failureMode === 'BLOCK') {
-          hasBlockingFailure = true;
-        } else {
-          hasNonBlockingFailure = true;
-        }
+      const missingClaims = this.missingClaimTypes(rule, verifiedClaims);
+      const missingFields = this.missingRequiredFields(rule, verifiedClaims);
+      const evaluatedAt = now();
+      const relevantClaims = verifiedClaims.filter((c) =>
+        rule.required_claims.includes(c.claim_type)
+      );
+
+      let logicResult: unknown = undefined;
+      let passed = false;
+      let failureReason: string | undefined;
+
+      if (missingClaims.length > 0 || missingFields.length > 0) {
+        // Fail-closed by default. A regulator-grade red-line check must
+        // never silently pass on absent evidence.
+        passed = !rule.fail_on_missing;
+        failureReason =
+          missingClaims.length > 0
+            ? `Missing required claim types: ${missingClaims.join(', ')}`
+            : `Missing required fields: ${missingFields.join(', ')}`;
 
         warnings.push({
           type: 'WARN_DATA_MISSING',
           obligation_id: rule.obligation_id,
           control_id: rule.control_id,
-          message: `Missing required claims: ${missingClaims.join(', ')}`,
-          severity: failureMode === 'BLOCK' ? 'HIGH' : 'MEDIUM',
-          timestamp: new Date().toISOString()
+          message: failureReason,
+          severity: rule.failure_mode === 'BLOCK' ? 'HIGH' : 'MEDIUM',
+          timestamp: evaluatedAt
         });
-
-        // If blocking, mark rule as failed
-        if (failureMode === 'BLOCK') {
-          evaluation.passed = false;
-        }
-      }
-
-      // Evaluate rule logic if all required claims are present
-      if (missingClaims.length === 0) {
-        const logicResult = this.evaluateRuleLogic(rule, verifiedClaims, parameters);
-        evaluation.logic_result = logicResult;
-        evaluation.passed = logicResult === true;
-
-        if (!evaluation.passed) {
-          if (rule.failure_mode === 'BLOCK') {
-            hasBlockingFailure = true;
+      } else {
+        const data: Record<string, unknown> = { ...mergedParameters };
+        for (const claim of relevantClaims) {
+          if (data[claim.claim_type] === undefined) {
+            data[claim.claim_type] = claim.claim_data;
+          } else if (Array.isArray(data[claim.claim_type])) {
+            (data[claim.claim_type] as unknown[]).push(claim.claim_data);
           } else {
-            hasNonBlockingFailure = true;
+            data[claim.claim_type] = [data[claim.claim_type], claim.claim_data];
           }
         }
-      } else {
-        // Missing claims - rule cannot be evaluated
-        evaluation.passed = false;
+
+        try {
+          logicResult = jsonLogic.apply(rule.logic as RulesLogic, data);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          throw new Error(
+            `JSON-Logic evaluation failed for rule ${rule.rule_id}: ${msg}`
+          );
+        }
+        passed = logicResult === true;
       }
+
+      if (!passed) {
+        if (rule.failure_mode === 'BLOCK') hasBlockingFailure = true;
+        else if (rule.failure_mode === 'FAIL') hasNonBlockingFailure = true;
+      }
+
+      ruleEvaluations.push({
+        obligation_id: rule.obligation_id,
+        control_id: rule.control_id,
+        rule_id: rule.rule_id,
+        passed,
+        failure_mode: rule.failure_mode,
+        evaluated_at: evaluatedAt,
+        evidence_claim_refs: relevantClaims.map((c) => c.id),
+        parameters_used: mergedParameters,
+        logic_result: logicResult ?? failureReason
+      });
     }
 
-    // Determine final status
     const finalStatus = this.determineFinalStatus(
       hasBlockingFailure,
       hasNonBlockingFailure,
       warnings
     );
 
-    const result: ComplianceResult = {
+    return ComplianceResultSchema.parse({
       final_status: finalStatus,
       warnings,
       rule_evaluations: ruleEvaluations,
-      evaluated_at: new Date().toISOString()
-    };
-
-    // Validate with Zod
-    return ComplianceResultSchema.parse(result);
+      evaluated_at: now()
+    });
   }
 
-  /**
-   * Evaluate a single rule.
-   */
-  private evaluateRule(
+  private missingClaimTypes(
     rule: PolicyRule,
-    verifiedClaims: VerifiedClaim[],
-    parameters: Record<string, unknown>
-  ): RuleResult {
-    // Get relevant claims for this rule
-    const relevantClaims = verifiedClaims.filter(claim =>
-      rule.required_claims.includes(claim.claim_type)
-    );
-
-    // Merge rule parameters with global parameters (rule parameters take precedence)
-    const mergedParameters = {
-      ...parameters,
-      ...rule.parameters
-    };
-
-    // Evaluate logic (if claims are present)
-    let logicResult: unknown = undefined;
-    let passed = false;
-
-    if (relevantClaims.length > 0) {
-      logicResult = this.evaluateRuleLogic(rule, verifiedClaims, mergedParameters);
-      passed = logicResult === true;
-    }
-
-    return {
-      obligation_id: rule.obligation_id,
-      control_id: rule.control_id,
-      rule_id: rule.rule_id,
-      passed,
-      failure_mode: rule.failure_mode,
-      evaluated_at: new Date().toISOString(),
-      evidence_claim_refs: relevantClaims.map(c => c.id),
-      parameters_used: mergedParameters,
-      logic_result: logicResult
-    };
+    claims: VerifiedClaim[]
+  ): string[] {
+    const present = new Set(claims.map((c) => c.claim_type));
+    return rule.required_claims.filter((t) => !present.has(t));
   }
 
-  /**
-   * Evaluate rule logic using JSON-Logic.
-   */
-  private evaluateRuleLogic(
+  private missingRequiredFields(
     rule: PolicyRule,
-    verifiedClaims: VerifiedClaim[],
-    parameters: Record<string, unknown>
-  ): unknown {
-    // Build data context for JSON-Logic
-    const data: Record<string, unknown> = {
-      ...parameters
-    };
-
-    // Add claims to data context, keyed by claim type
-    for (const claim of verifiedClaims) {
-      if (rule.required_claims.includes(claim.claim_type)) {
-        // If multiple claims of same type, use array
-        if (data[claim.claim_type]) {
-          if (Array.isArray(data[claim.claim_type])) {
-            (data[claim.claim_type] as unknown[]).push(claim.claim_data);
-          } else {
-            data[claim.claim_type] = [data[claim.claim_type], claim.claim_data];
-          }
-        } else {
-          data[claim.claim_type] = claim.claim_data;
+    claims: VerifiedClaim[]
+  ): string[] {
+    if (!rule.required_fields) return [];
+    const missing: string[] = [];
+    for (const [claimType, fields] of Object.entries(rule.required_fields)) {
+      const claim = claims.find((c) => c.claim_type === claimType);
+      if (!claim) {
+        for (const f of fields) missing.push(`${claimType}.${f}`);
+        continue;
+      }
+      for (const f of fields) {
+        if (!(f in claim.claim_data) || claim.claim_data[f] === null) {
+          missing.push(`${claimType}.${f}`);
         }
       }
     }
-
-    // Evaluate JSON-Logic expression
-    try {
-      return jsonLogic.apply(rule.logic, data);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new Error(`JSON-Logic evaluation failed for rule ${rule.rule_id}: ${errorMessage}`);
-    }
+    return missing;
   }
 
-  /**
-   * Check if required claims are missing.
-   */
-  private checkMissingClaims(
-    rule: PolicyRule,
-    verifiedClaims: VerifiedClaim[]
-  ): string[] {
-    const availableClaimTypes = new Set(
-      verifiedClaims.map(claim => claim.claim_type)
-    );
-
-    return rule.required_claims.filter(
-      requiredType => !availableClaimTypes.has(requiredType)
-    );
-  }
-
-  /**
-   * Determine final compliance status.
-   */
   private determineFinalStatus(
-    hasBlockingFailure: boolean,
-    hasNonBlockingFailure: boolean,
+    blocking: boolean,
+    nonBlocking: boolean,
     warnings: Warning[]
   ): ComplianceStatus {
-    if (hasBlockingFailure) {
-      return 'NON_COMPLIANT_BLOCKING';
-    }
-
-    if (hasNonBlockingFailure) {
-      return 'NON_COMPLIANT';
-    }
-
-    if (warnings.length > 0) {
-      return 'COMPLIANT_WITH_WARNINGS';
-    }
-
+    if (blocking) return 'NON_COMPLIANT_BLOCKING';
+    if (nonBlocking) return 'NON_COMPLIANT';
+    if (warnings.length > 0) return 'COMPLIANT_WITH_WARNINGS';
     return 'COMPLIANT';
   }
 }

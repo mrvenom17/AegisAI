@@ -1,51 +1,111 @@
 {
-  "version": "1.0.0",
-  "effective_date": "2024-08-01T00:00:00Z",
+  "version": "1.1.0",
+  "effective_date": "2025-02-02T00:00:00Z",
   "metadata": {
-    "name": "EU AI Act - Article 5: Prohibited Practices",
-    "description": "Red line checks for prohibited AI practices. All rules are BLOCKING.",
-    "regulatory_source": "EU AI Act, Article 5"
+    "name": "EU AI Act — Article 5: Prohibited Practices",
+    "description": "Red-line checks. ALL rules are BLOCKING and fail-closed: missing field is treated as a positive match, not a pass. Effective 2 Feb 2025.",
+    "regulatory_source": "Regulation (EU) 2024/1689, Article 5"
   },
   "rules": [
     {
-      "obligation_id": "EU_AI_ACT_ART_5",
+      "obligation_id": "EU_AI_ACT_ART_5_1_C",
       "control_id": "ART_5_SOCIAL_SCORING",
       "rule_id": "ART_5_NO_SOCIAL_SCORING",
       "required_claims": ["system_classification"],
+      "required_fields": {
+        "system_classification": ["is_social_scoring", "attestation_signed_by"]
+      },
+      "fail_on_missing": true,
       "parameters": {},
       "logic": {
-        "!=": [
+        "===": [
           { "var": "system_classification.is_social_scoring" },
-          true
+          false
         ]
       },
       "failure_mode": "BLOCK",
-      "description": "Social scoring systems are prohibited"
+      "iso_42001_controls": ["A.2.2", "A.5.4", "A.5.5"],
+      "description": "Social scoring (Article 5(1)(c)) is prohibited. Self-attestation must be signed."
     },
     {
-      "obligation_id": "EU_AI_ACT_ART_5",
+      "obligation_id": "EU_AI_ACT_ART_5_1_H",
       "control_id": "ART_5_REAL_TIME_BIOMETRIC",
       "rule_id": "ART_5_NO_REAL_TIME_BIOMETRIC",
       "required_claims": ["system_classification"],
+      "required_fields": {
+        "system_classification": ["is_real_time_biometric", "attestation_signed_by"]
+      },
+      "fail_on_missing": true,
       "parameters": {},
       "logic": {
-        "or": [
-          {
-            "!=": [
-              { "var": "system_classification.is_real_time_biometric" },
-              true
-            ]
-          },
-          {
-            "==": [
-              { "var": "system_classification.is_real_time_biometric" },
-              false
-            ]
-          }
+        "===": [
+          { "var": "system_classification.is_real_time_biometric" },
+          false
         ]
       },
       "failure_mode": "BLOCK",
-      "description": "Real-time remote biometric identification is prohibited (with limited exceptions)"
+      "iso_42001_controls": ["A.2.2", "A.5.4"],
+      "description": "Real-time remote biometric ID in publicly accessible spaces for law enforcement (Article 5(1)(h)) is prohibited subject to narrow exceptions."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_5_1_A",
+      "control_id": "ART_5_SUBLIMINAL",
+      "rule_id": "ART_5_NO_SUBLIMINAL",
+      "required_claims": ["system_classification"],
+      "required_fields": {
+        "system_classification": ["uses_subliminal_techniques"]
+      },
+      "fail_on_missing": true,
+      "parameters": {},
+      "logic": {
+        "===": [
+          { "var": "system_classification.uses_subliminal_techniques" },
+          false
+        ]
+      },
+      "failure_mode": "BLOCK",
+      "iso_42001_controls": ["A.2.2", "A.5.4"],
+      "description": "Article 5(1)(a) — subliminal techniques beyond consciousness."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_5_1_B",
+      "control_id": "ART_5_VULNERABILITIES",
+      "rule_id": "ART_5_NO_VULN_EXPLOITATION",
+      "required_claims": ["system_classification"],
+      "required_fields": {
+        "system_classification": ["exploits_vulnerabilities"]
+      },
+      "fail_on_missing": true,
+      "parameters": {},
+      "logic": {
+        "===": [
+          { "var": "system_classification.exploits_vulnerabilities" },
+          false
+        ]
+      },
+      "failure_mode": "BLOCK",
+      "iso_42001_controls": ["A.2.2", "A.5.4"],
+      "description": "Article 5(1)(b) — exploitation of age/disability/socioeconomic vulnerabilities."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_5_1_F",
+      "control_id": "ART_5_EMOTION_RECOGNITION",
+      "rule_id": "ART_5_NO_EMOTION_AT_WORK_OR_SCHOOL",
+      "required_claims": ["system_classification"],
+      "required_fields": {
+        "system_classification": ["emotion_recognition_workplace_or_education"]
+      },
+      "fail_on_missing": true,
+      "parameters": {},
+      "logic": {
+        "===": [
+          { "var": "system_classification.emotion_recognition_workplace_or_education" },
+          false
+        ]
+      },
+      "failure_mode": "BLOCK",
+      "iso_42001_controls": ["A.2.2", "A.5.4"],
+      "description": "Article 5(1)(f) — emotion recognition in workplace or education (with narrow exceptions)."
     }
   ]
 }

@@ -1,8 +1,8 @@
 /**
- * Orchestrator Service
- * 
- * Coordinates the compliance evaluation flow:
- * Registry → Vault → Verifier → Policy Engine → Snapshot Store
+ * Orchestrator — coordinates the full conformity evaluation flow.
+ *
+ * Provenance-aware Merkle root: leaves bind submitter, source_system,
+ * verifier_version, claim_type, and claim_data — not just claim_data.
  */
 
 import {
@@ -16,7 +16,8 @@ import { EvidenceVault } from './evidence-vault.js';
 import { EvidenceVerifier } from './evidence-verifier.js';
 import { PolicyEngine } from './policy-engine.js';
 import { SnapshotStore } from './snapshot-store.js';
-import { computeEvidenceMerkleRoot, hashObject } from '../utils/crypto.js';
+import { hashObject, merkleRoot } from '../utils/crypto.js';
+import { AuditLog } from './audit-log.js';
 
 export interface OrchestratorOptions {
   registry: SystemRegistry;
@@ -24,130 +25,116 @@ export interface OrchestratorOptions {
   verifier: EvidenceVerifier;
   policyEngine: PolicyEngine;
   snapshotStore: SnapshotStore;
+  auditLog: AuditLog;
 }
 
 export interface EvidenceSubmission {
-  type: 'STRUCTURED_JSON' | 'DOCUMENT_PDF' | 'DOCUMENT_TXT' | 'METRICS_DATASET';
+  type:
+    | 'STRUCTURED_JSON'
+    | 'DOCUMENT_PDF'
+    | 'DOCUMENT_TXT'
+    | 'METRICS_DATASET'
+    | 'MONITORING_SIGNAL';
   content: unknown;
   metadata: {
     submitted_by: string;
     source_system: string;
+    observed_at?: string;
   };
+  claim_type_hint?: string;
 }
 
 export interface ComplianceEvaluationRequest {
+  orgId: string;
   systemVersionId: string;
   evidenceSubmissions: EvidenceSubmission[];
   policySet: PolicySet;
   parameterSet: ParameterSet;
+  actor: string;
 }
 
 export class Orchestrator {
-  private readonly registry: SystemRegistry;
-  private readonly vault: EvidenceVault;
-  private readonly verifier: EvidenceVerifier;
-  private readonly policyEngine: PolicyEngine;
-  private readonly snapshotStore: SnapshotStore;
+  constructor(private readonly opts: OrchestratorOptions) {}
 
-  constructor(options: OrchestratorOptions) {
-    this.registry = options.registry;
-    this.vault = options.vault;
-    this.verifier = options.verifier;
-    this.policyEngine = options.policyEngine;
-    this.snapshotStore = options.snapshotStore;
-  }
-
-  /**
-   * Execute full compliance evaluation flow.
-   * 
-   * Flow:
-   * 1. Validate system version exists and is not locked
-   * 2. Store all evidence in vault
-   * 3. Verify all evidence
-   * 4. Evaluate policies
-   * 5. Create immutable snapshot
-   * 
-   * This is the MAIN ENTRY POINT for compliance evaluation.
-   */
   async evaluateCompliance(
-    request: ComplianceEvaluationRequest
+    req: ComplianceEvaluationRequest
   ): Promise<ComplianceSnapshot> {
-    // Step 1: Validate system version
-    const systemVersion = this.registry.getSystemVersion(request.systemVersionId);
-    
-    if (systemVersion.locked) {
+    const sv = this.opts.registry.getSystemVersion(
+      req.systemVersionId,
+      req.orgId
+    );
+    if (this.opts.registry.isLocked(sv.id)) {
       throw new Error(
-        `System version ${request.systemVersionId} is locked and cannot be evaluated`
+        `System version ${sv.id} is locked and cannot be evaluated`
       );
     }
 
-    // Step 2: Store evidence in vault
-    const evidenceAddresses: string[] = [];
-    for (const evidence of request.evidenceSubmissions) {
-      const address = this.vault.storeEvidence(
-        evidence.type,
-        evidence.content,
-        evidence.metadata
-      );
-      evidenceAddresses.push(address);
-    }
-
-    // Step 3: Verify evidence
     const verifiedClaims: VerifiedClaim[] = [];
-    for (const address of evidenceAddresses) {
-      try {
-        const claim = this.verifier.verifyEvidence(address);
-        verifiedClaims.push(claim);
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        throw new Error(
-          `Evidence verification failed for ${address}: ${errorMessage}`
-        );
-      }
+    for (const ev of req.evidenceSubmissions) {
+      const addr = this.opts.vault.storeEvidence(req.orgId, ev.type, ev.content, {
+        submitted_by: ev.metadata.submitted_by,
+        source_system: ev.metadata.source_system,
+        observed_at: ev.metadata.observed_at
+      });
+      const claim = this.opts.verifier.verifyEvidence(addr, ev.claim_type_hint);
+      verifiedClaims.push(claim);
     }
 
-    // Step 4: Evaluate policies
-    const complianceResult = this.policyEngine.evaluate(
+    const result = this.opts.policyEngine.evaluate(
       verifiedClaims,
-      request.policySet.rules,
-      request.parameterSet.parameters
+      req.policySet.rules,
+      req.parameterSet.parameters
     );
 
-    // Step 5: Compute evidence Merkle root
-    const claimHashes = verifiedClaims.map(claim => 
-      hashObject(claim.claim_data)
+    const merkle = merkleRoot(
+      verifiedClaims.map((c) =>
+        hashObject({
+          claim_type: c.claim_type,
+          claim_data: c.claim_data,
+          evidence_vault_ref: c.evidence_vault_ref,
+          verifier_version: c.verifier_version
+        })
+      )
     );
-    const evidenceMerkleRoot = computeEvidenceMerkleRoot(claimHashes);
 
-    // Step 6: Compute parameter set hash
-    const parameterSetHash = hashObject(request.parameterSet.parameters);
+    const snapshot = this.opts.snapshotStore.storeSnapshot({
+      org_id: req.orgId,
+      system_version_ref: sv.id,
+      policy_set_version: req.policySet.version,
+      parameter_set_hash: hashObject(req.parameterSet.parameters),
+      evidence_merkle_root: merkle,
+      final_status: result.final_status,
+      warnings: result.warnings,
+      rule_evaluations: result.rule_evaluations
+    });
 
-    // Step 7: Create immutable snapshot
-    const snapshot = this.snapshotStore.storeSnapshot({
-      system_version_ref: request.systemVersionId,
-      policy_set_version: request.policySet.version,
-      parameter_set_hash: parameterSetHash,
-      evidence_merkle_root: evidenceMerkleRoot,
-      final_status: complianceResult.final_status,
-      warnings: complianceResult.warnings,
-      rule_evaluations: complianceResult.rule_evaluations
+    this.opts.auditLog.append({
+      orgId: req.orgId,
+      actor: req.actor,
+      action: 'COMPLIANCE_EVALUATED',
+      targetType: 'compliance_snapshot',
+      targetId: snapshot.id,
+      payload: {
+        system_version_ref: sv.id,
+        final_status: snapshot.final_status,
+        policy_set_version: snapshot.policy_set_version
+      }
     });
 
     return snapshot;
   }
 
-  /**
-   * Get compliance status for a system version.
-   * Returns the latest snapshot.
-   */
-  getComplianceStatus(systemVersionId: string): ComplianceSnapshot | undefined {
-    return this.snapshotStore.getLatestSnapshot(systemVersionId);
+  getComplianceStatus(
+    orgId: string,
+    systemVersionId: string
+  ): ComplianceSnapshot | undefined {
+    return this.opts.snapshotStore.getLatestSnapshot(orgId, systemVersionId);
   }
 
-  /**
-   * Get all compliance snapshots for a system version.
-   */
-  getComplianceHistory(systemVersionId: string): ComplianceSnapshot[] {
-    return this.snapshotStore.listSnapshotsForSystem(systemVersionId);
+  getComplianceHistory(
+    orgId: string,
+    systemVersionId: string
+  ): ComplianceSnapshot[] {
+    return this.opts.snapshotStore.listSnapshotsForSystem(orgId, systemVersionId);
   }
 }

@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "effective_date": "2026-08-02T00:00:00Z",
+  "metadata": {
+    "name": "EU AI Act — Article 9: Risk Management System",
+    "description": "Continuous, iterative risk management process across the AI system lifecycle.",
+    "regulatory_source": "Regulation (EU) 2024/1689, Article 9"
+  },
+  "rules": [
+    {
+      "obligation_id": "EU_AI_ACT_ART_9",
+      "control_id": "ART_9_RMS_DOCUMENTED",
+      "rule_id": "ART_9_RMS_DOCUMENTED",
+      "required_claims": ["risk_management_system"],
+      "required_fields": {
+        "risk_management_system": ["documented_at", "process_owner", "review_cadence_months"]
+      },
+      "fail_on_missing": true,
+      "parameters": {},
+      "logic": {
+        "and": [
+          { "!=": [{ "var": "risk_management_system.process_owner" }, ""] },
+          { "<=": [{ "var": "risk_management_system.review_cadence_months" }, 12] }
+        ]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.5.2", "A.5.3", "A.5.4", "A.5.5"],
+      "description": "A documented, owned RMS reviewed at least annually."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_9",
+      "control_id": "ART_9_RISK_REGISTER",
+      "rule_id": "ART_9_RISK_REGISTER_PRESENT",
+      "required_claims": ["risk_register"],
+      "required_fields": {
+        "risk_register": ["entry_count", "last_updated_at", "covers_foreseeable_misuse"]
+      },
+      "fail_on_missing": true,
+      "parameters": { "min_entries": 1 },
+      "logic": {
+        "and": [
+          { ">=": [{ "var": "risk_register.entry_count" }, { "var": "min_entries" }] },
+          { "===": [{ "var": "risk_register.covers_foreseeable_misuse" }, true] }
+        ]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.5.2", "A.6.1.3"],
+      "description": "Risk register exists, is current, and explicitly covers reasonably foreseeable misuse."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_9",
+      "control_id": "ART_9_RESIDUAL_RISK_ACCEPTABLE",
+      "rule_id": "ART_9_RESIDUAL_RISK_BELOW_THRESHOLD",
+      "required_claims": ["residual_risk_assessment"],
+      "required_fields": {
+        "residual_risk_assessment": ["overall_residual_risk_score", "approver"]
+      },
+      "fail_on_missing": true,
+      "parameters": { "max_residual_risk": 0.4 },
+      "logic": {
+        "<=": [
+          { "var": "residual_risk_assessment.overall_residual_risk_score" },
+          { "var": "max_residual_risk" }
+        ]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.5.4", "A.5.5"],
+      "description": "Residual risk after mitigations must be below the configured organizational threshold."
+    }
+  ]
+}

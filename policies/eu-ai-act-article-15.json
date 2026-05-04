@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0",
-  "effective_date": "2024-08-01T00:00:00Z",
+  "version": "1.1.0",
+  "effective_date": "2026-08-02T00:00:00Z",
   "metadata": {
-    "name": "EU AI Act - Article 15: Accuracy, Robustness and Cybersecurity",
-    "description": "Ensures high-risk AI systems achieve an appropriate level of accuracy, robustness and cybersecurity",
-    "regulatory_source": "EU AI Act, Article 15"
+    "name": "EU AI Act — Article 15: Accuracy, Robustness and Cybersecurity",
+    "description": "High-risk AI systems must achieve appropriate accuracy, robustness, and cybersecurity throughout their lifecycle.",
+    "regulatory_source": "Regulation (EU) 2024/1689, Article 15"
   },
   "rules": [
     {
@@ -12,49 +12,54 @@
       "control_id": "ART_15_ACCURACY",
       "rule_id": "ART_15_ACCURACY_THRESHOLD",
       "required_claims": ["accuracy_metric"],
-      "parameters": {
-        "min_accuracy_threshold": 0.95
+      "required_fields": {
+        "accuracy_metric": ["accuracy", "test_dataset_size", "test_date"]
       },
+      "fail_on_missing": true,
+      "parameters": { "min_accuracy_threshold": 0.95, "min_test_dataset_size": 1000 },
       "logic": {
-        ">=": [
-          { "var": "accuracy_metric.accuracy" },
-          { "var": "min_accuracy_threshold" }
+        "and": [
+          { ">=": [{ "var": "accuracy_metric.accuracy" }, { "var": "min_accuracy_threshold" }] },
+          { ">=": [{ "var": "accuracy_metric.test_dataset_size" }, { "var": "min_test_dataset_size" }] }
         ]
       },
       "failure_mode": "FAIL",
-      "description": "Accuracy must meet or exceed the minimum threshold"
+      "iso_42001_controls": ["A.6.2.4", "A.6.2.6"],
+      "description": "Accuracy meets threshold and is measured on a sufficiently large test set."
     },
     {
       "obligation_id": "EU_AI_ACT_ART_15",
       "control_id": "ART_15_ROBUSTNESS",
       "rule_id": "ART_15_ROBUSTNESS_TEST",
       "required_claims": ["robustness_test_result"],
-      "parameters": {
-        "min_robustness_score": 0.90
+      "required_fields": {
+        "robustness_test_result": ["score", "test_type", "test_date"]
       },
+      "fail_on_missing": true,
+      "parameters": { "min_robustness_score": 0.9 },
       "logic": {
-        ">=": [
-          { "var": "robustness_test_result.score" },
-          { "var": "min_robustness_score" }
-        ]
+        ">=": [{ "var": "robustness_test_result.score" }, { "var": "min_robustness_score" }]
       },
       "failure_mode": "FAIL",
-      "description": "Robustness test must meet minimum score"
+      "iso_42001_controls": ["A.6.2.4"],
+      "description": "Robustness test (adversarial, OOD, perturbation) meets minimum score."
     },
     {
       "obligation_id": "EU_AI_ACT_ART_15",
       "control_id": "ART_15_CYBERSECURITY",
       "rule_id": "ART_15_CYBERSECURITY_AUDIT",
       "required_claims": ["cybersecurity_audit"],
+      "required_fields": {
+        "cybersecurity_audit": ["passed", "audit_date", "auditor"]
+      },
+      "fail_on_missing": true,
       "parameters": {},
       "logic": {
-        "==": [
-          { "var": "cybersecurity_audit.passed" },
-          true
-        ]
+        "===": [{ "var": "cybersecurity_audit.passed" }, true]
       },
       "failure_mode": "BLOCK",
-      "description": "Cybersecurity audit must pass (blocking requirement)"
+      "iso_42001_controls": ["A.6.2.4", "A.6.2.6"],
+      "description": "Independent cybersecurity audit passed (blocking)."
     }
   ]
 }

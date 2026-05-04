@@ -1,120 +1,136 @@
 /**
- * System Registry Service
- * 
- * Registers AI systems, models, versions, and deployment context.
- * Supports versioning and locking during active audit cycles.
+ * System Registry
+ *
+ * - Multi-tenant via org_id.
+ * - Locks expire automatically by checking locked_until on every isLocked() call.
  */
 
-import { SystemVersion, SystemVersionSchema } from '../domain/types.js';
+import {
+  SystemVersion,
+  SystemVersionSchema,
+  RiskTier
+} from '../domain/types.js';
 import { generateUUID } from '../utils/uuid.js';
 
-export interface SystemRegistryOptions {
-  // In-memory storage for now. In production, use persistent storage.
-  storage?: Map<string, SystemVersion>;
+export interface RegistryStorage {
+  get(id: string): SystemVersion | undefined;
+  set(id: string, value: SystemVersion): void;
+  values(): IterableIterator<SystemVersion>;
+}
+
+export class InMemoryRegistryStorage implements RegistryStorage {
+  private readonly map = new Map<string, SystemVersion>();
+  get(id: string): SystemVersion | undefined {
+    return this.map.get(id);
+  }
+  set(id: string, value: SystemVersion): void {
+    this.map.set(id, value);
+  }
+  values(): IterableIterator<SystemVersion> {
+    return this.map.values();
+  }
+}
+
+export interface RegisterSystemVersionInput {
+  orgId: string;
+  systemId: string;
+  version: string;
+  modelName: string;
+  modelVersion: string;
+  intendedPurpose: string;
+  riskTier?: RiskTier;
+  deploymentContext: {
+    environment: 'PRODUCTION' | 'STAGING' | 'DEVELOPMENT';
+    region: string;
+    deploymentDate: string;
+  };
 }
 
 export class SystemRegistry {
-  private readonly storage: Map<string, SystemVersion>;
+  private readonly storage: RegistryStorage;
 
-  constructor(options: SystemRegistryOptions = {}) {
-    this.storage = options.storage ?? new Map();
+  constructor(options: { storage?: RegistryStorage } = {}) {
+    this.storage = options.storage ?? new InMemoryRegistryStorage();
   }
 
-  /**
-   * Register a new system version.
-   * Returns the registered SystemVersion.
-   */
-  registerSystemVersion(
-    systemId: string,
-    version: string,
-    modelName: string,
-    modelVersion: string,
-    deploymentContext: {
-      environment: 'PRODUCTION' | 'STAGING' | 'DEVELOPMENT';
-      region: string;
-      deploymentDate: string; // ISO8601 UTC
-    }
-  ): SystemVersion {
+  registerSystemVersion(input: RegisterSystemVersionInput): SystemVersion {
     const id = generateUUID();
     const now = new Date().toISOString();
-
-    const systemVersion: SystemVersion = {
+    const sv: SystemVersion = {
       id,
-      system_id: systemId,
-      version,
-      model_name: modelName,
-      model_version: modelVersion,
+      org_id: input.orgId,
+      system_id: input.systemId,
+      version: input.version,
+      model_name: input.modelName,
+      model_version: input.modelVersion,
+      intended_purpose: input.intendedPurpose,
+      risk_tier: input.riskTier ?? 'UNCLASSIFIED',
       deployment_context: {
-        environment: deploymentContext.environment,
-        region: deploymentContext.region,
-        deployment_date: deploymentContext.deploymentDate
+        environment: input.deploymentContext.environment,
+        region: input.deploymentContext.region,
+        deployment_date: input.deploymentContext.deploymentDate
       },
       registered_at: now,
       locked: false
     };
-
-    // Validate with Zod
-    const validated = SystemVersionSchema.parse(systemVersion);
-
-    // Store by ID
+    const validated = Object.freeze(SystemVersionSchema.parse(sv));
     this.storage.set(id, validated);
-
     return validated;
   }
 
-  /**
-   * Retrieve a system version by ID.
-   * Throws if not found.
-   */
-  getSystemVersion(id: string): SystemVersion {
-    const version = this.storage.get(id);
-    if (!version) {
-      throw new Error(`SystemVersion not found: ${id}`);
+  getSystemVersion(id: string, orgId?: string): SystemVersion {
+    const v = this.storage.get(id);
+    if (!v) throw new Error(`SystemVersion not found: ${id}`);
+    if (orgId && v.org_id !== orgId) {
+      throw new Error(`SystemVersion not accessible by tenant ${orgId}`);
     }
-    return version;
+    return v;
   }
 
-  /**
-   * Lock a system version during an active audit cycle.
-   * Prevents modifications to the system version.
-   */
+  setRiskTier(id: string, tier: RiskTier): SystemVersion {
+    const v = this.getSystemVersion(id);
+    const updated = Object.freeze({ ...v, risk_tier: tier });
+    this.storage.set(id, updated);
+    return updated;
+  }
+
   lockSystemVersion(id: string, lockedUntil: string): void {
-    const version = this.getSystemVersion(id);
-    const updated: SystemVersion = {
-      ...version,
+    const v = this.getSystemVersion(id);
+    const updated = Object.freeze({
+      ...v,
       locked: true,
       locked_until: lockedUntil
-    };
+    });
     this.storage.set(id, updated);
   }
 
-  /**
-   * Unlock a system version after audit cycle completes.
-   */
   unlockSystemVersion(id: string): void {
-    const version = this.getSystemVersion(id);
-    const updated: SystemVersion = {
-      ...version,
+    const v = this.getSystemVersion(id);
+    const updated = Object.freeze({
+      ...v,
       locked: false,
       locked_until: undefined
-    };
+    });
     this.storage.set(id, updated);
   }
 
-  /**
-   * Check if a system version is locked.
-   */
   isLocked(id: string): boolean {
-    const version = this.getSystemVersion(id);
-    return version.locked;
+    const v = this.getSystemVersion(id);
+    if (!v.locked) return false;
+    if (v.locked_until && new Date(v.locked_until).getTime() < Date.now()) {
+      this.unlockSystemVersion(id);
+      return false;
+    }
+    return true;
   }
 
-  /**
-   * List all system versions for a given system ID.
-   */
-  listSystemVersions(systemId: string): SystemVersion[] {
-    return Array.from(this.storage.values()).filter(
-      v => v.system_id === systemId
-    );
+  listSystemVersions(orgId: string, systemId?: string): SystemVersion[] {
+    const out: SystemVersion[] = [];
+    for (const v of this.storage.values()) {
+      if (v.org_id !== orgId) continue;
+      if (systemId && v.system_id !== systemId) continue;
+      out.push(v);
+    }
+    return out;
   }
 }

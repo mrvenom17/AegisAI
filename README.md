@@ -1,157 +1,136 @@
-# AegisAI Compliance Engine v1.0
+# AegisAI
 
-## Executive Summary
+**EU AI Act conformity, in a single API call.**
 
-AegisAI Compliance Engine is a deterministic, policy-driven compliance decision system designed specifically to evaluate AI systems against regulatory frameworks, primarily the EU AI Act. 
+AegisAI turns your existing model evaluations, fairness tests, and audit artefacts into a regulator-defensible **Annex IV technical documentation binder** — with cryptographically signed snapshots, Annex III risk classification, FRIA workflow (Article 27), post-market monitoring (Article 72), and ISO/IEC 42001 control coverage.
 
-Its primary use case is to facilitate automated compliance checks, validate submitted evidence, and generate comprehensive compliance reports for AI operations. By ingestng declarative JSON policies and validating system evidence against them, AegisAI ensures systematic, transparent, and reproducible evaluation of AI systems against complex legislative frameworks like Articles 5 and 15 of the EU AI Act. This solves the critical problem of manual, error-prone regulatory audits by providing a structured, code-first approach to AI compliance.
+Built for EU banks, insurers, and lending fintechs deploying high-risk AI systems for credit, underwriting, and fraud — under the 2 Aug 2026 high-risk obligations deadline.
 
-## System Architecture
+> Status: v0.1 MVP. Production-grade kernel + REST API + Docker. Web UI ships with v0.2.
 
-AegisAI employs a modular, service-oriented architecture built in TypeScript. The system is designed around several core components that work together to evaluate compliance:
+## Why this exists
 
-*   **Core Infrastructure**: The application is divided into distinct services (Policy Engine, Evidence Vault, System Registry, etc.) orchestrated by a central `Orchestrator`.
-*   **Design Patterns**: 
-    *   *Registry Pattern*: Used by the `SystemRegistry` to manage the lifecycle and metadata of AI systems under evaluation.
-    *   *Adapter Pattern*: Employed by the `EvidenceVerifier` (`StructuredJSONAdapter`, `DocumentAdapter`) to normalize heterogeneous evidence inputs into a standard format for evaluation.
-    *   *Facade/Orchestrator Pattern*: The `Orchestrator` service acts as the central coordinator, abstracting the complex interactions between the vault, engine, and reporting services.
-*   **Module Interactions**: The `Orchestrator` receives a request, loads policies via `PolicyLoader`, fetches systems from the `SystemRegistry`, gathers and verifies evidence using the `EvidenceVault` and `EvidenceVerifier`, evaluates the data using the `PolicyEngine`, stores the result in the `SnapshotStore`, and finally generates documentation via `DocGen`.
+- The EU AI Act high-risk regime applies from **2 Aug 2026**. Penalties up to **€35M or 7% of global turnover**.
+- Internal teams keep a hundred eval reports in a hundred Notion pages and call it compliance. A regulator wants **one signed binder, mapped to each obligation, reproducible from primary evidence.**
+- That's what AegisAI produces.
 
-## Tech Stack & Dependencies
+## What you get
 
-**Language**: TypeScript (Node.js Environment)
+| Capability | Endpoint | Output |
+|---|---|---|
+| Annex III classification (Articles 5–7) | `POST /v1/systems/:id/classify` | Signed `RiskClassification` (PROHIBITED / HIGH_RISK / LIMITED_RISK / MINIMAL_RISK / GPAI) |
+| Conformity evaluation (Articles 5, 9, 10, 13, 14, 15) | `POST /v1/evaluations` | Signed `ComplianceSnapshot` with rule-by-rule outcomes |
+| FRIA workflow (Article 27) | `POST /v1/fria` etc. | DRAFT → IN_REVIEW → APPROVED state machine |
+| Post-market monitoring (Article 72) | `POST /v1/monitoring/signals` | Webhook ingestion + 15-day Article 73 incident clock |
+| ISO/IEC 42001 control coverage | bundled in binder | Annex A control-by-control PASS/PARTIAL/FAIL |
+| Annex IV technical documentation | `GET /v1/binders/:snapshotId` | Print-to-PDF HTML, deterministic, signature-verifiable |
+| Hash-chained audit log | `GET /v1/audit-log` | Tamper-evident chain across every state change |
 
-**Core Dependencies**:
-*   `zod` (^3.22.4): Schema validation and runtime type safety.
-*   `json-logic-js` (^2.0.2): Evaluation of complex, declarative JSON policy rules.
-*   `uuid` (^9.0.1): Unique identifier generation for systems, evidence, and evaluations.
-*   `crypto` (^1.0.1): Cryptographic hashing to ensure evidence integrity and immutability.
+Every record is scoped to your tenant and signed with your tenant's Ed25519 key. The signature on a snapshot covers its rule evaluations, evidence Merkle root (which itself binds submitter and verifier provenance, not just data), policy version, and parameter-set hash. Verification is one HTTP call.
 
-**Development Tools**:
-*   `typescript` (^5.3.2): Static typing and compilation.
-*   `eslint` (^8.54.0) & `@typescript-eslint/*`: Code linting and quality assurance.
+## Run it
 
-## Directory Structure
-
-```text
-/
-├── ARCHITECTURE.md          # Detailed architectural documentation
-├── IMPLEMENTATION_NOTES.md  # Implementation details and developer notes
-├── package.json             # Project dependencies and npm scripts
-├── PROJECT_SUMMARY.md       # High-level project summary
-├── QUICK_START.md           # Quick start guide
-├── README.md                # This comprehensive documentation file
-├── tsconfig.json            # TypeScript compiler configuration
-├── examples/                # Compiled end-to-end usage examples
-├── policies/                # JSON definitions of regulatory rules
-│   ├── eu-ai-act-article-15.json
-│   └── eu-ai-act-article-5.json
-└── src/                     # Source code directory
-    ├── index.ts             # Main entry point exporting core services
-    ├── domain/              # Shared data models and interfaces
-    │   └── types.ts
-    ├── examples/            # TypeScript source for practical end-to-end usage
-    │   └── end-to-end-example.ts
-    ├── services/            # Core business logic modules
-    │   ├── docgen.ts
-    │   ├── evidence-vault.ts
-    │   ├── evidence-verifier.ts
-    │   ├── orchestrator.ts
-    │   ├── policy-engine.ts
-    │   ├── policy-loader.ts
-    │   ├── snapshot-store.ts
-    │   └── system-registry.ts
-    └── utils/               # Helper utilities
-        ├── crypto.ts
-        └── uuid.ts
-```
-
-## Setup & Installation
-
-Follow these steps to set up the AegisAI Compliance Engine locally.
-
-**Prerequisites**:
-*   Node.js (version 18.0.0 or higher)
-*   npm (Node Package Manager)
-
-**1. Clone the Repository**:
 ```bash
-git clone <repository_url>
-cd AegisAI
+docker compose up -d
+# Create a tenant (returns API key once — store it)
+curl -X POST http://localhost:8080/v1/orgs \
+  -H 'x-admin-token: change-me' \
+  -H 'content-type: application/json' \
+  -d '{"name": "Example Bank"}'
 ```
 
-**2. Install Dependencies**:
+Or natively:
+
 ```bash
 npm install
-```
-
-**3. Compile TypeScript**:
-```bash
 npm run build
+AEGIS_ADMIN_TOKEN=change-me npm start
 ```
-This will compile the TypeScript code into JavaScript in the `dist/` directory.
 
-*(Note: There are no specific `.env` requirements mandated by the core codebase at this time. Standard Node.js environment applies).*
+## End-to-end example
 
-## Core Data Flow / Logic
-
-The primary execution path for a compliance evaluation follows these steps:
-
-1.  **Initialization**: The system boots up. Regulatory rules are loaded from JSON files in the `policies/` directory using the `PolicyLoader`. The AI system under evaluation is registered in the `SystemRegistry`.
-2.  **Evidence Collection**: Technical documentation, test results, and operational data are submitted to the `EvidenceVault`. The `EvidenceVerifier` ensures this data matches expected schemas and formats.
-3.  **Policy Evaluation**: The central `Orchestrator` triggers the `PolicyEngine`. The Engine uses `json-logic-js` to process the verified evidence against the loaded JSON policy rules, determining compliant or non-compliant states defensively.
-4.  **Snapshot & Reporting**: The outcome of the evaluation, along with the state of the evidence and policies at that exact point in time, is persisted to the `SnapshotStore` for auditability. Finally, the `DocGen` service formats these results into human-readable compliance reports.
-
-## Testing & Deployment
-
-**Running Examples**:
-To see an end-to-end evaluation workflow in action, execute the provided example script:
 ```bash
-npm run example
+API_KEY="aegis_..."   # from /v1/orgs response
+BASE=http://localhost:8080
+
+# 1. Register your AI system
+SYSTEM_ID=$(curl -s -X POST $BASE/v1/systems \
+  -H "x-api-key: $API_KEY" -H 'content-type: application/json' \
+  -d '{
+    "system_id": "credit-scorer-v3",
+    "version": "3.1.0",
+    "model_name": "GBM",
+    "model_version": "v3.1",
+    "intended_purpose": "consumer credit scoring",
+    "deployment": {"environment":"PRODUCTION","region":"eu-west-1","deployment_date":"2026-04-01T00:00:00Z"}
+  }' | jq -r .id)
+
+# 2. Classify it (Annex III)
+curl -s -X POST $BASE/v1/systems/$SYSTEM_ID/classify \
+  -H "x-api-key: $API_KEY" -H 'content-type: application/json' \
+  -d '{ "questionnaire": { "creditworthiness_or_credit_scoring": true, ... } }'
+# → {"tier":"HIGH_RISK", ...}
+
+# 3. Run a multi-pack conformity evaluation
+SNAP=$(curl -s -X POST $BASE/v1/evaluations \
+  -H "x-api-key: $API_KEY" -H 'content-type: application/json' \
+  -d @evidence-bundle.json | jq -r .id)
+
+# 4. Generate the Annex IV binder
+curl -s "$BASE/v1/binders/$SNAP" -H "x-api-key: $API_KEY" > binder.html
+open binder.html  # print to PDF for your Notified Body
 ```
-This script compiles the project and runs the `dist/examples/end-to-end-example.js` file, demonstrating the complete data flow.
 
-**Quality Assurance**:
-Ensure code quality and strict type safety by running the built-in checks:
+## Architecture (one diagram)
+
+```
+            ┌──────────────────────────────────────────────────────┐
+HTTP API ──▶│  Risk Classifier  ┐                                  │
+            │  Evidence Vault  ─┼─▶ Policy Engine ─▶ Snapshot Store│──▶ DocGen ──▶ Annex IV HTML
+            │  Verifier        ─┘  (deterministic,  (Ed25519 sigs, │
+            │                       JSON-Logic)      append-only)  │
+            │  FRIA Service ─┐                                     │
+            │  Monitoring   ─┴──▶ Audit Log (hash-chained)         │
+            └──────────────────────────────────────────────────────┘
+                                    │
+                              SQLite (v0.1) / Postgres (v0.2)
+```
+
+- **Pure deterministic policy kernel.** Same evidence + same policy + same parameters → same Merkle root, same parameter hash, same final status. Snapshot ID is derived from the canonical inputs.
+- **Provenance-bound Merkle tree.** Leaves bind submitter, source system, verifier version — not just claim data — so an audit can prove who said what.
+- **Ed25519 signatures.** Per-tenant signing keys. No fallback "hash-as-signature" in any mode.
+- **Append-only, hash-chained audit log.** Tampering with any historical row invalidates the chain from that point forward.
+- **Multi-tenant by construction.** Every record carries `org_id`. Every API key authorises exactly one tenant. Tenant isolation is enforced at the storage layer.
+
+## Policy packs included
+
+- `art-5` — Article 5 prohibited practices (BLOCKING, fail-closed)
+- `art-9` — Article 9 risk management system
+- `art-10` — Article 10 data and data governance
+- `art-13` — Article 13 transparency to deployers
+- `art-14` — Article 14 human oversight
+- `art-15` — Article 15 accuracy / robustness / cybersecurity
+
+Each rule maps to ISO/IEC 42001 Annex A controls (`iso_42001_controls` field) so the conformity binder doubles as your ISO 42001 evidence pack.
+
+## What's NOT in v0.1
+
+- Web UI (sell first, build with the design partner — coming in v0.2)
+- SSO / SAML
+- Postgres driver (SQLite is fine through your first ~5 tenants)
+- Server-side PDF rendering (HTML → browser print is sufficient for now)
+- Audit-firm export connectors
+
+## Development
+
 ```bash
-npm run lint
+npm install
 npm run type-check
-```
-
-**Build for Production**:
-To compile the project for deployment:
-```bash
+npm test
 npm run build
 ```
-The compiled assets will be available in the `dist/` directory, ready to be integrated into any Node.js (>=18) environment.
-
-**Production-Grade EU AI Act Compliance Decision Engine**
-
-## Architecture
-
-AegisAI is a deterministic, policy-driven compliance engine that converts EU AI Act obligations into immutable, signed ComplianceSnapshots.
-
-### Core Principles
-
-1. **Determinism**: Identical inputs produce identical outputs forever
-2. **Evidence Verification**: All evidence is type-validated before evaluation
-3. **Configuration as Interpretation**: All thresholds come from signed Parameter Sets
-4. **Immutable Compliance**: Compliance is an immutable snapshot, not a boolean
-5. **Explicit Uncertainty**: Missing data is a first-class signal
-
-### Services
-
-- **System Registry**: Registers AI systems, models, versions, deployment context
-- **Evidence Vault**: Write-once storage with cryptographic content addressing
-- **Evidence Verifier**: Validates evidence and emits VerifiedClaims
-- **Policy Engine**: Pure function that evaluates policies deterministically
-- **Snapshot Store**: Immutable storage for ComplianceSnapshots
-- **DocGen**: Generates Annex IV technical documentation
-
-## Usage
-
-See `examples/` directory for end-to-end examples.
 
 ## License
 
-UNLICENSED - Internal Use Only
+UNLICENSED — Internal Use Only.
+For commercial licensing or design-partnership inquiries: see `PRODUCT.md`.

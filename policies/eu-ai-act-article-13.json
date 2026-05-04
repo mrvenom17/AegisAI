@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "effective_date": "2026-08-02T00:00:00Z",
+  "metadata": {
+    "name": "EU AI Act — Article 13: Transparency to Deployers",
+    "description": "Provider must furnish deployers with instructions for use that enable correct interpretation of outputs.",
+    "regulatory_source": "Regulation (EU) 2024/1689, Article 13"
+  },
+  "rules": [
+    {
+      "obligation_id": "EU_AI_ACT_ART_13",
+      "control_id": "ART_13_INSTRUCTIONS_FOR_USE",
+      "rule_id": "ART_13_IFU_PRESENT_AND_COMPLETE",
+      "required_claims": ["instructions_for_use"],
+      "required_fields": {
+        "instructions_for_use": [
+          "provider_identity",
+          "intended_purpose",
+          "performance_characteristics",
+          "known_limitations",
+          "expected_lifetime",
+          "human_oversight_measures",
+          "version"
+        ]
+      },
+      "fail_on_missing": true,
+      "parameters": {},
+      "logic": {
+        "and": [
+          { "!=": [{ "var": "instructions_for_use.provider_identity" }, ""] },
+          { "!=": [{ "var": "instructions_for_use.intended_purpose" }, ""] },
+          { "!=": [{ "var": "instructions_for_use.expected_lifetime" }, ""] }
+        ]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.8.2", "A.8.5", "A.9.4"],
+      "description": "Article 13(3) — Instructions for Use cover provider identity, intended purpose, performance, limitations, lifetime, and oversight measures."
+    }
+  ]
+}

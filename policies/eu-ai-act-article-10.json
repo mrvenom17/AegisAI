@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "effective_date": "2026-08-02T00:00:00Z",
+  "metadata": {
+    "name": "EU AI Act — Article 10: Data and Data Governance",
+    "description": "Training/validation/test datasets must be relevant, representative, free of errors and complete; bias examined; provenance tracked.",
+    "regulatory_source": "Regulation (EU) 2024/1689, Article 10"
+  },
+  "rules": [
+    {
+      "obligation_id": "EU_AI_ACT_ART_10",
+      "control_id": "ART_10_DATA_GOVERNANCE_DOC",
+      "rule_id": "ART_10_DATA_GOVERNANCE_PRESENT",
+      "required_claims": ["data_governance_record"],
+      "required_fields": {
+        "data_governance_record": [
+          "training_dataset_id",
+          "validation_dataset_id",
+          "test_dataset_id",
+          "design_choices_documented",
+          "data_sources_documented",
+          "preprocessing_documented"
+        ]
+      },
+      "fail_on_missing": true,
+      "parameters": {},
+      "logic": {
+        "and": [
+          { "===": [{ "var": "data_governance_record.design_choices_documented" }, true] },
+          { "===": [{ "var": "data_governance_record.data_sources_documented" }, true] },
+          { "===": [{ "var": "data_governance_record.preprocessing_documented" }, true] }
+        ]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.7.2", "A.7.3", "A.7.5", "A.7.6"],
+      "description": "Data governance record covers design choices, sources, and preprocessing."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_10",
+      "control_id": "ART_10_BIAS_EXAMINATION",
+      "rule_id": "ART_10_BIAS_EXAMINED",
+      "required_claims": ["bias_assessment"],
+      "required_fields": {
+        "bias_assessment": [
+          "examined_protected_attributes",
+          "max_disparity_ratio",
+          "assessed_at"
+        ]
+      },
+      "fail_on_missing": true,
+      "parameters": { "max_acceptable_disparity": 1.25 },
+      "logic": {
+        "<=": [
+          { "var": "bias_assessment.max_disparity_ratio" },
+          { "var": "max_acceptable_disparity" }
+        ]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.5.4", "A.7.4", "A.7.6"],
+      "description": "Statistical bias examined; max disparity ratio across protected attributes within threshold."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_10",
+      "control_id": "ART_10_DATA_QUALITY",
+      "rule_id": "ART_10_DATA_QUALITY_THRESHOLD",
+      "required_claims": ["data_quality_metrics"],
+      "required_fields": {
+        "data_quality_metrics": ["completeness", "label_error_rate"]
+      },
+      "fail_on_missing": true,
+      "parameters": { "min_completeness": 0.98, "max_label_error_rate": 0.02 },
+      "logic": {
+        "and": [
+          { ">=": [{ "var": "data_quality_metrics.completeness" }, { "var": "min_completeness" }] },
+          { "<=": [{ "var": "data_quality_metrics.label_error_rate" }, { "var": "max_label_error_rate" }] }
+        ]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.7.4", "A.7.6"],
+      "description": "Data completeness and label error rate within configured thresholds."
+    }
+  ]
+}

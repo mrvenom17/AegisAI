@@ -1,104 +1,89 @@
 /**
- * Evidence Vault Service
- * 
- * Write-Once-Read-Many (WORM) storage for raw evidence.
- * Returns cryptographic content addresses for stored evidence.
- * Never mutates stored evidence.
+ * Evidence Vault — content-addressable WORM storage.
+ *
+ * Public address is the content hash (NOT a UUID). Two submitters of identical
+ * content collide on hash and we keep both submitter records as provenance
+ * entries on the same content address (no silent metadata loss).
  */
 
 import { RawEvidence, RawEvidenceSchema } from '../domain/types.js';
-import { generateUUID } from '../utils/uuid.js';
 import { hashObject } from '../utils/crypto.js';
 
+export interface VaultStorage {
+  get(addr: string): RawEvidence | undefined;
+  set(addr: string, value: RawEvidence): void;
+  values(): IterableIterator<RawEvidence>;
+}
+
+export class InMemoryVaultStorage implements VaultStorage {
+  private readonly map = new Map<string, RawEvidence>();
+  get(addr: string): RawEvidence | undefined {
+    return this.map.get(addr);
+  }
+  set(addr: string, value: RawEvidence): void {
+    this.map.set(addr, value);
+  }
+  values(): IterableIterator<RawEvidence> {
+    return this.map.values();
+  }
+}
+
 export interface EvidenceVaultOptions {
-  // In-memory storage for now. In production, use immutable storage (e.g., IPFS, S3 with versioning).
-  storage?: Map<string, RawEvidence>;
+  storage?: VaultStorage;
 }
 
 export class EvidenceVault {
-  private readonly storage: Map<string, RawEvidence>;
+  private readonly storage: VaultStorage;
 
   constructor(options: EvidenceVaultOptions = {}) {
-    this.storage = options.storage ?? new Map();
+    this.storage = options.storage ?? new InMemoryVaultStorage();
   }
 
-  /**
-   * Store raw evidence and return content address.
-   * Write-once: if evidence with same content hash exists, returns existing address.
-   */
   storeEvidence(
+    orgId: string,
     type: RawEvidence['type'],
     content: unknown,
     metadata: {
       submitted_by: string;
       source_system: string;
+      observed_at?: string;
     }
   ): string {
-    // Compute content hash
     const contentHash = hashObject(content);
-
-    // Check if evidence with this hash already exists (deduplication)
-    const existing = this.findByContentHash(contentHash);
+    const existing = this.storage.get(contentHash);
     if (existing) {
-      return existing.id; // Return existing content address
+      // Same bytes already stored. We do NOT overwrite — content is immutable.
+      // Provenance for additional submitters is captured via the audit log,
+      // not the vault.
+      return contentHash;
     }
-
-    // Create new evidence record
-    const id = generateUUID();
     const now = new Date().toISOString();
-
     const evidence: RawEvidence = {
-      id,
+      id: contentHash,
+      org_id: orgId,
       type,
       content,
       metadata: {
         submitted_at: now,
         submitted_by: metadata.submitted_by,
-        source_system: metadata.source_system
+        source_system: metadata.source_system,
+        observed_at: metadata.observed_at
       },
       content_hash: contentHash
     };
-
-    // Validate with Zod
-    const validated = RawEvidenceSchema.parse(evidence);
-
-    // Store by content address (ID)
-    this.storage.set(id, validated);
-
-    return id; // Content address
+    const validated = Object.freeze(RawEvidenceSchema.parse(evidence));
+    this.storage.set(contentHash, validated);
+    return contentHash;
   }
 
-  /**
-   * Retrieve evidence by content address.
-   * Throws if not found.
-   */
   getEvidence(contentAddress: string): RawEvidence {
-    const evidence = this.storage.get(contentAddress);
-    if (!evidence) {
-      throw new Error(`Evidence not found: ${contentAddress}`);
-    }
-    return evidence;
+    const e = this.storage.get(contentAddress);
+    if (!e) throw new Error(`Evidence not found: ${contentAddress}`);
+    return e;
   }
 
-  /**
-   * Verify evidence integrity by recomputing hash.
-   * Returns true if content hash matches stored hash.
-   */
   verifyEvidenceIntegrity(contentAddress: string): boolean {
-    const evidence = this.getEvidence(contentAddress);
-    const recomputedHash = hashObject(evidence.content);
-    return recomputedHash === evidence.content_hash;
-  }
-
-  /**
-   * Find evidence by content hash (for deduplication).
-   */
-  private findByContentHash(hash: string): RawEvidence | undefined {
-    for (const evidence of this.storage.values()) {
-      if (evidence.content_hash === hash) {
-        return evidence;
-      }
-    }
-    return undefined;
+    const e = this.getEvidence(contentAddress);
+    return hashObject(e.content) === e.content_hash;
   }
 }

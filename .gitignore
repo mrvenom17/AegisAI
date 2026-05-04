@@ -1,9 +1,13 @@
 node_modules/
 dist/
-*.log
-.DS_Store
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
 .env
-.env.local
+.env.*
+.DS_Store
+*.log
 *.pem
 *.key
 coverage/

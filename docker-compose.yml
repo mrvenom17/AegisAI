@@ -1,0 +1,14 @@
+services:
+  aegisai:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - AEGIS_ADMIN_TOKEN=${AEGIS_ADMIN_TOKEN:-change-me}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - aegis-data:/data
+    restart: unless-stopped
+
+volumes:
+  aegis-data:

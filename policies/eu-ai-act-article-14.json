@@ -1,0 +1,54 @@
+{
+  "version": "1.0.0",
+  "effective_date": "2026-08-02T00:00:00Z",
+  "metadata": {
+    "name": "EU AI Act — Article 14: Human Oversight",
+    "description": "High-risk systems must be designed and developed so that they can be effectively overseen by natural persons.",
+    "regulatory_source": "Regulation (EU) 2024/1689, Article 14"
+  },
+  "rules": [
+    {
+      "obligation_id": "EU_AI_ACT_ART_14",
+      "control_id": "ART_14_OVERSIGHT_MEASURES",
+      "rule_id": "ART_14_OVERSIGHT_MEASURES_DEFINED",
+      "required_claims": ["human_oversight"],
+      "required_fields": {
+        "human_oversight": [
+          "designated_role",
+          "stop_or_override_available",
+          "training_completed",
+          "monitoring_dashboards"
+        ]
+      },
+      "fail_on_missing": true,
+      "parameters": {},
+      "logic": {
+        "and": [
+          { "!=": [{ "var": "human_oversight.designated_role" }, ""] },
+          { "===": [{ "var": "human_oversight.stop_or_override_available" }, true] },
+          { "===": [{ "var": "human_oversight.training_completed" }, true] }
+        ]
+      },
+      "failure_mode": "BLOCK",
+      "iso_42001_controls": ["A.3.2", "A.4.5", "A.6.2.6", "A.9.2"],
+      "description": "A trained natural-person operator with stop/override capability must be designated."
+    },
+    {
+      "obligation_id": "EU_AI_ACT_ART_14",
+      "control_id": "ART_14_AUTOMATION_BIAS_AWARENESS",
+      "rule_id": "ART_14_AUTOMATION_BIAS_TRAINING",
+      "required_claims": ["human_oversight"],
+      "required_fields": {
+        "human_oversight": ["automation_bias_training_completed_at"]
+      },
+      "fail_on_missing": true,
+      "parameters": { "max_age_months": 12 },
+      "logic": {
+        "===": [{ "var": "human_oversight.automation_bias_training_in_period" }, true]
+      },
+      "failure_mode": "FAIL",
+      "iso_42001_controls": ["A.3.2", "A.4.5"],
+      "description": "Operators trained on automation bias within configured period."
+    }
+  ]
+}
