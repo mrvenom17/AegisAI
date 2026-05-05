@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>AegisAI — One-Pager (print to PDF)</title>
+<style>
+  @page { size: A4; margin: 14mm; }
+  body { font: 11pt/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #111; max-width: 19cm; margin: 0 auto; padding: 0; }
+  h1 { font-size: 22pt; margin: 0 0 0.2em; letter-spacing: -0.01em; }
+  h2 { font-size: 12pt; margin: 1em 0 0.3em; padding-bottom: 0.15em; border-bottom: 1px solid #ccc; }
+  .tagline { color: #555; font-size: 11.5pt; margin: 0 0 0.6em; }
+  .pill { display: inline-block; padding: 0.1em 0.6em; background: #fff3e0; color: #b54300;
+    border: 1px solid #f0c79e; border-radius: 999px; font-size: 9.5pt; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6em; margin: 0.5em 0; }
+  .box { border: 1px solid #d0d0d0; border-radius: 6px; padding: 0.55em 0.7em; }
+  .box h3 { font-size: 10.5pt; margin: 0 0 0.2em; color: #2a2a2a; }
+  .box p { margin: 0; color: #555; font-size: 9.8pt; }
+  table { border-collapse: collapse; width: 100%; margin: 0.4em 0; }
+  th, td { border: 1px solid #d0d0d0; padding: 0.35em 0.55em; text-align: left; font-size: 10pt; }
+  th { background: #f6f6f6; }
+  .strong { font-weight: 700; }
+  footer { margin-top: 1em; color: #666; font-size: 9pt; }
+  .stamp { font-family: ui-monospace, monospace; font-size: 9pt; color: #555; }
+  ul { margin: 0.3em 0 0.6em 1.2em; padding: 0; }
+  li { margin: 0.1em 0; }
+</style>
+</head>
+<body>
+
+<h1>AegisAI</h1>
+<p class="tagline">EU AI Act conformity for high-risk credit, underwriting, and fraud AI.</p>
+<p><span class="pill">High-risk obligations apply 2 Aug 2026 · Penalties up to €35M / 7% global turnover</span></p>
+
+<h2>What we ship</h2>
+<div class="grid">
+  <div class="box">
+    <h3>Annex III classification</h3>
+    <p>Signed risk-tier decision against Articles 5–7 and Annex III.</p>
+  </div>
+  <div class="box">
+    <h3>Annex IV binder</h3>
+    <p>Print-to-PDF technical documentation, deterministic, signature-verifiable.</p>
+  </div>
+  <div class="box">
+    <h3>FRIA + monitoring</h3>
+    <p>Article 27 workflow + Article 72 webhooks + Article 73 incident clock.</p>
+  </div>
+</div>
+
+<h2>How it works (3 boxes)</h2>
+<table>
+  <tr>
+    <th style="width: 33%">1. Ingest evidence</th>
+    <th style="width: 34%">2. Evaluate &amp; sign</th>
+    <th style="width: 33%">3. Generate binder</th>
+  </tr>
+  <tr>
+    <td>Model evals, fairness tests, cybersecurity audits, instructions-for-use — submitted via REST API.</td>
+    <td>Deterministic JSON-Logic kernel evaluates against Articles 5, 9, 10, 13, 14, 15. Output is an Ed25519-signed snapshot with a provenance-bound evidence Merkle root.</td>
+    <td>One API call returns a complete Annex IV technical-documentation binder, ISO/IEC 42001 control-coverage table, and audit-log appendix.</td>
+  </tr>
+</table>
+
+<h2>Why now</h2>
+<ul>
+  <li>EU AI Act high-risk obligations apply <span class="strong">2 Aug 2026</span>. Most EU banks have 50 model-eval reports in 50 places and no defensible binder.</li>
+  <li>ISO/IEC 42001 is a procurement gate. AegisAI rules carry an <span class="stamp">iso_42001_controls</span> field per rule.</li>
+  <li>Penalties for prohibited practices (Article 5) reach €35M or 7% of global turnover. Fail-closed by construction.</li>
+</ul>
+
+<h2>Free design partnership (3 slots)</h2>
+<table>
+  <tr>
+    <th style="width: 30%">Time</th>
+    <td>8 weeks · 4 one-hour sessions · run by the founder personally</td>
+  </tr>
+  <tr>
+    <th>Scope</th>
+    <td>One AI system · all six policy packs · full Annex IV binder + FRIA</td>
+  </tr>
+  <tr>
+    <th>Your input</th>
+    <td>One champion · one evidence steward · NDA + 1-page LOI</td>
+  </tr>
+  <tr>
+    <th>You keep</th>
+    <td>The binder, regardless of whether you continue with us</td>
+  </tr>
+  <tr>
+    <th>Fee</th>
+    <td><span class="strong">€0</span> · After 2 Aug 2026, equivalent pilot is €25,000</td>
+  </tr>
+</table>
+
+<footer>
+  <strong>[Your Name]</strong> · <a href="mailto:contact@aegisai.eu">contact@aegisai.eu</a> · LinkedIn /in/[your-handle] · aegisai.eu
+</footer>
+
+</body>
+</html>

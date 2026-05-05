@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Annex IV Technical Documentation — atlantis-credit-v3</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+         color: #111; max-width: 920px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  h1 { font-size: 1.6rem; border-bottom: 2px solid #111; padding-bottom: 0.5rem; }
+  h2 { font-size: 1.25rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 0.25rem; }
+  h3 { font-size: 1rem; margin-top: 1rem; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5rem 0; }
+  th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; font-size: 0.92rem; }
+  th { background: #f5f5f5; }
+  .pass { color: #1b5e20; font-weight: 600; }
+  .fail { color: #b71c1c; font-weight: 600; }
+  .partial { color: #e65100; font-weight: 600; }
+  .meta { font-size: 0.85rem; color: #555; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85em; }
+  .stamp { font-family: ui-monospace, monospace; word-break: break-all; font-size: 0.8rem; }
+  .pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 0.4rem; font-size: 0.85rem; }
+  .pill-prohibited { background: #ffebee; color: #b71c1c; }
+  .pill-high { background: #fff3e0; color: #e65100; }
+  .pill-limited { background: #fff8e1; color: #f57f17; }
+  .pill-minimal { background: #e8f5e9; color: #1b5e20; }
+  .pill-gpai { background: #e3f2fd; color: #0d47a1; }
+  .pill-unclassified { background: #eceff1; color: #455a64; }
+  @media print {
+    body { margin: 1cm; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>EU AI Act Annex IV — Technical Documentation</h1>
+  <p class="meta">Generated 2026-05-05T03:08:41.777Z · Snapshot ID <code>32ef1dd0-398a-54b4-a757-3e6ea6b5fcca</code></p>
+  <p class="meta">This document is generated deterministically from a signed ComplianceSnapshot. Tampering will invalidate the cryptographic signature recorded in §10.</p>
+</header>
+<h2>1. General description</h2>
+<table>
+  <tr><th>System ID</th><td>atlantis-credit-v3</td></tr>
+  <tr><th>System version</th><td>3.4.2</td></tr>
+  <tr><th>Model</th><td>AtlantisCredit-GBM @ v3.4.2</td></tr>
+  <tr><th>Intended purpose</th><td>Consumer credit decisioning for unsecured personal loans (€500–€50,000). Used by the bank to approve, decline, or refer loan applications across retail channels in Greece, Cyprus, Portugal, and Ireland.</td></tr>
+  <tr><th>Risk tier</th><td><span class="pill pill-high">HIGH_RISK</span></td></tr>
+  <tr><th>Deployment</th><td>PRODUCTION · eu-west-1 · since 2025-09-01T00:00:00Z</td></tr>
+</table>
+<h2>2. Risk classification (Article 6 / Annex III)</h2>
+<table>
+  <thead><tr><th>Reference</th><th>Match</th><th>Rationale</th></tr></thead>
+  <tbody><tr>
+      <td>Annex III §5(b)</td>
+      <td>✓</td>
+      <td>Creditworthiness / credit scoring</td>
+    </tr></tbody>
+</table>
+<p class="meta">Classification ID <code>2894476a-e383-5c55-90c1-b907b121eb71</code>, classified at 2026-05-05T03:08:41.754Z.</p>
+<h2>3. Detailed description of system elements and processes</h2>
+<p>Compliance evaluation executed against the following policy sets:</p>
+<ul><li>EU AI Act — Article 5: Prohibited Practices (v1.1.0)</li><li>EU AI Act — Article 9: Risk Management System (v1.0.0)</li><li>EU AI Act — Article 10: Data and Data Governance (v1.0.0)</li><li>EU AI Act — Article 13: Transparency to Deployers (v1.0.0)</li><li>EU AI Act — Article 14: Human Oversight (v1.0.0)</li><li>EU AI Act — Article 15: Accuracy, Robustness and Cybersecurity (v1.1.0)</li></ul>
+<p>Final status: <strong class="pass">COMPLIANT</strong></p>
+<h2>4. Monitoring, functioning and control specifications — rule evaluations</h2>
+<table>
+  <thead><tr><th>Obligation</th><th>Control</th><th>Rule</th><th>Outcome</th><th>Failure mode</th><th>Claims</th></tr></thead>
+  <tbody><tr>
+      <td>EU_AI_ACT_ART_5_1_C</td>
+      <td>ART_5_SOCIAL_SCORING</td>
+      <td>ART_5_NO_SOCIAL_SCORING</td>
+      <td class="pass">PASS</td>
+      <td>BLOCK</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_5_1_H</td>
+      <td>ART_5_REAL_TIME_BIOMETRIC</td>
+      <td>ART_5_NO_REAL_TIME_BIOMETRIC</td>
+      <td class="pass">PASS</td>
+      <td>BLOCK</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_5_1_A</td>
+      <td>ART_5_SUBLIMINAL</td>
+      <td>ART_5_NO_SUBLIMINAL</td>
+      <td class="pass">PASS</td>
+      <td>BLOCK</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_5_1_B</td>
+      <td>ART_5_VULNERABILITIES</td>
+      <td>ART_5_NO_VULN_EXPLOITATION</td>
+      <td class="pass">PASS</td>
+      <td>BLOCK</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_5_1_F</td>
+      <td>ART_5_EMOTION_RECOGNITION</td>
+      <td>ART_5_NO_EMOTION_AT_WORK_OR_SCHOOL</td>
+      <td class="pass">PASS</td>
+      <td>BLOCK</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_9</td>
+      <td>ART_9_RMS_DOCUMENTED</td>
+      <td>ART_9_RMS_DOCUMENTED</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_9</td>
+      <td>ART_9_RISK_REGISTER</td>
+      <td>ART_9_RISK_REGISTER_PRESENT</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_9</td>
+      <td>ART_9_RESIDUAL_RISK_ACCEPTABLE</td>
+      <td>ART_9_RESIDUAL_RISK_BELOW_THRESHOLD</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_10</td>
+      <td>ART_10_DATA_GOVERNANCE_DOC</td>
+      <td>ART_10_DATA_GOVERNANCE_PRESENT</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_10</td>
+      <td>ART_10_BIAS_EXAMINATION</td>
+      <td>ART_10_BIAS_EXAMINED</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_10</td>
+      <td>ART_10_DATA_QUALITY</td>
+      <td>ART_10_DATA_QUALITY_THRESHOLD</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_13</td>
+      <td>ART_13_INSTRUCTIONS_FOR_USE</td>
+      <td>ART_13_IFU_PRESENT_AND_COMPLETE</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_14</td>
+      <td>ART_14_OVERSIGHT_MEASURES</td>
+      <td>ART_14_OVERSIGHT_MEASURES_DEFINED</td>
+      <td class="pass">PASS</td>
+      <td>BLOCK</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_14</td>
+      <td>ART_14_AUTOMATION_BIAS_AWARENESS</td>
+      <td>ART_14_AUTOMATION_BIAS_TRAINING</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_15</td>
+      <td>ART_15_ACCURACY</td>
+      <td>ART_15_ACCURACY_THRESHOLD</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_15</td>
+      <td>ART_15_ROBUSTNESS</td>
+      <td>ART_15_ROBUSTNESS_TEST</td>
+      <td class="pass">PASS</td>
+      <td>FAIL</td>
+      <td>1</td>
+    </tr><tr>
+      <td>EU_AI_ACT_ART_15</td>
+      <td>ART_15_CYBERSECURITY</td>
+      <td>ART_15_CYBERSECURITY_AUDIT</td>
+      <td class="pass">PASS</td>
+      <td>BLOCK</td>
+      <td>1</td>
+    </tr></tbody>
+</table>
+<h2>5. Risk management system &amp; FRIA</h2>
+<p>FRIA <code>33d6f8b7-78a9-41c7-bb18-37fac6d31d2c</code> · Status <strong>APPROVED</strong> · Deployer Hellenic Atlantic Bank S.A.</p>
+<h3>Risks identified</h3>
+<table><thead><tr><th>Risk</th><th>Likelihood</th><th>Severity</th><th>Affected rights</th></tr></thead><tbody><tr>
+        <td>Disparate impact on younger applicants (&lt;25) due to thin-file bias.</td>
+        <td>MEDIUM</td>
+        <td>MEDIUM</td>
+        <td>Non-discrimination, Right to economic participation</td>
+      </tr><tr>
+        <td>Decline-explainability gap when ensemble disagreement is high.</td>
+        <td>MEDIUM</td>
+        <td>HIGH</td>
+        <td>Right to explanation under GDPR Art. 22</td>
+      </tr><tr>
+        <td>Cross-border data transfer in event of branch failover.</td>
+        <td>LOW</td>
+        <td>MEDIUM</td>
+        <td>Data protection</td>
+      </tr></tbody></table>
+<h3>Mitigations</h3>
+<ul><li>Shadow-mode review of all decline decisions for under-25 applicants by a credit officer for the first 90 days post-deployment. — owner: Head of Consumer Credit, review: Weekly during shadow window, monthly thereafter</li><li>High-disagreement decisions (model variance &gt; 0.15) routed to human credit officer. — owner: Model Risk Manager, review: Continuous</li><li>GDPR Article 22 explanation generated and delivered with every adverse decision. — owner: Data Protection Officer, review: Quarterly audit</li></ul>
+<h3>Human oversight measures</h3>
+<ul><li>Designated credit officer per region with stop-decision authority within 4 hours of any flagged case.</li><li>Daily monitoring dashboard of approval/decline distributions vs. baseline.</li><li>Mandatory automation-bias training for credit officers, refreshed annually.</li><li>Weekly review of complaints lodged against AI-driven decisions.</li></ul>
+<h2>6. Testing procedures &amp; warnings</h2><p>No warnings recorded.</p>
+<h2>7. Instructions for use</h2>
+<p>Instructions for use are documented under EU AI Act Article 13 obligations evaluated above. The provider supplies them as Article 13 evidence; this section reproduces the version of record at evaluation time.</p>
+<p class="meta">Snapshot timestamp 2026-05-05T03:08:41.765Z.</p>
+<h2>8. Post-market monitoring (Article 72)</h2>
+<table><thead><tr><th>Observed at</th><th>Type</th><th>Severity</th><th>Reported</th></tr></thead><tbody><tr>
+      <td>2026-05-04T03:08:41.767Z</td>
+      <td>BIAS_OBSERVED</td>
+      <td>MEDIUM</td>
+      <td>—</td>
+    </tr><tr>
+      <td>2026-05-02T03:08:41.766Z</td>
+      <td>PERFORMANCE_DRIFT</td>
+      <td>LOW</td>
+      <td>—</td>
+    </tr></tbody></table>
+<h2>9. ISO/IEC 42001:2023 control coverage</h2>
+<table><thead><tr><th>Control</th><th>Name</th><th>Status</th><th>Rules</th></tr></thead><tbody><tr>
+      <td><code>A.2.2</code></td>
+      <td>AI policy</td>
+      <td class="pass">PASS</td>
+      <td>5</td>
+    </tr><tr>
+      <td><code>A.2.3</code></td>
+      <td>Alignment with other organizational policies</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.3.2</code></td>
+      <td>AI roles and responsibilities</td>
+      <td class="pass">PASS</td>
+      <td>2</td>
+    </tr><tr>
+      <td><code>A.3.3</code></td>
+      <td>Reporting of concerns</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.4.2</code></td>
+      <td>Resources for AI systems</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.4.3</code></td>
+      <td>Tooling resources</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.4.4</code></td>
+      <td>System and computing resources</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.4.5</code></td>
+      <td>Human resources</td>
+      <td class="pass">PASS</td>
+      <td>2</td>
+    </tr><tr>
+      <td><code>A.4.6</code></td>
+      <td>Data resources</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.5.2</code></td>
+      <td>AI system impact assessment process</td>
+      <td class="pass">PASS</td>
+      <td>2</td>
+    </tr><tr>
+      <td><code>A.5.3</code></td>
+      <td>Documentation of AI system impact assessments</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.5.4</code></td>
+      <td>Assessing AI system impact on individuals or groups</td>
+      <td class="pass">PASS</td>
+      <td>8</td>
+    </tr><tr>
+      <td><code>A.5.5</code></td>
+      <td>Assessing societal impacts of AI systems</td>
+      <td class="pass">PASS</td>
+      <td>3</td>
+    </tr><tr>
+      <td><code>A.6.1.2</code></td>
+      <td>Objectives for responsible AI development</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.6.1.3</code></td>
+      <td>Processes for responsible AI design and development</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.6.2.2</code></td>
+      <td>AI system requirements and specification</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.6.2.3</code></td>
+      <td>Documentation of AI system design and development</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.6.2.4</code></td>
+      <td>AI system verification and validation</td>
+      <td class="pass">PASS</td>
+      <td>3</td>
+    </tr><tr>
+      <td><code>A.6.2.5</code></td>
+      <td>AI system deployment</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.6.2.6</code></td>
+      <td>AI system operation and monitoring</td>
+      <td class="pass">PASS</td>
+      <td>3</td>
+    </tr><tr>
+      <td><code>A.6.2.7</code></td>
+      <td>AI system technical documentation</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.6.2.8</code></td>
+      <td>AI system event logs</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.7.2</code></td>
+      <td>Data management process</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.7.3</code></td>
+      <td>Acquisition of data</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.7.4</code></td>
+      <td>Quality of data for AI systems</td>
+      <td class="pass">PASS</td>
+      <td>2</td>
+    </tr><tr>
+      <td><code>A.7.5</code></td>
+      <td>Data provenance</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.7.6</code></td>
+      <td>Data preparation</td>
+      <td class="pass">PASS</td>
+      <td>3</td>
+    </tr><tr>
+      <td><code>A.8.2</code></td>
+      <td>System documentation and information for users</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.8.3</code></td>
+      <td>External reporting</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.8.4</code></td>
+      <td>Communication of incidents</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.8.5</code></td>
+      <td>Information for interested parties</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.9.2</code></td>
+      <td>Processes for responsible use of AI systems</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.9.3</code></td>
+      <td>Objectives for responsible use of AI systems</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.9.4</code></td>
+      <td>Intended use of the AI system</td>
+      <td class="pass">PASS</td>
+      <td>1</td>
+    </tr><tr>
+      <td><code>A.10.2</code></td>
+      <td>Allocating responsibilities for AI third parties</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.10.3</code></td>
+      <td>Suppliers</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr><tr>
+      <td><code>A.10.4</code></td>
+      <td>Customers</td>
+      <td class="partial">NOT_COVERED</td>
+      <td>0</td>
+    </tr></tbody></table>
+<h2>10. Cryptographic verification</h2>
+<table>
+  <tr><th>Snapshot ID</th><td class="stamp">32ef1dd0-398a-54b4-a757-3e6ea6b5fcca</td></tr>
+  <tr><th>Signing key ID</th><td class="stamp">17a0fbebac8c15e1</td></tr>
+  <tr><th>Evidence Merkle root</th><td class="stamp">b9f9c7d60c3e78b62d877617b96adb4a3f0876247a7e7201544acb0476c66e54</td></tr>
+  <tr><th>Parameter set hash</th><td class="stamp">44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a</td></tr>
+  <tr><th>Signature</th><td class="stamp">75uF0x4rPFG+u4XMZ5wjD1wvuesh5J/TCavU/IK73oVWs/5bUDfEdnNkygYZ7Xbq0BTdd7+6SKWgnmhSllNEDA==</td></tr>
+</table>
+</body>
+</html>

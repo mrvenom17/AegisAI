@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AegisAI — EU AI Act conformity for high-risk AI</title>
+<meta name="description" content="Annex III classification, Annex IV technical documentation, FRIA, post-market monitoring — signed and audit-defensible. For EU banks, insurers, and lending fintechs." />
+<style>
+  :root {
+    --bg: #0e0f12;
+    --fg: #e8e9ec;
+    --muted: #9aa0aa;
+    --accent: #ffb84d;
+    --card: #15171c;
+    --border: #23262d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  main { max-width: 880px; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+  header.hero { padding: 1rem 0 3rem; border-bottom: 1px solid var(--border); }
+  .pill { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px;
+    background: rgba(255, 184, 77, 0.12); color: var(--accent);
+    font-size: 0.85rem; letter-spacing: 0.02em; border: 1px solid rgba(255, 184, 77, 0.25); }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin: 1rem 0 0.6rem; letter-spacing: -0.02em; }
+  h2 { font-size: 1.4rem; margin: 3rem 0 0.8rem; letter-spacing: -0.01em; }
+  h3 { font-size: 1.05rem; margin: 1.2rem 0 0.4rem; }
+  p { color: var(--fg); }
+  .lede { color: var(--muted); font-size: 1.1rem; max-width: 56ch; }
+  .cta { display: inline-block; background: var(--accent); color: #1a1306;
+    padding: 0.8rem 1.2rem; border-radius: 8px; font-weight: 600; margin-top: 1.2rem; }
+  .cta.secondary { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+  .cta + .cta { margin-left: 0.6rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; }
+  .card h3 { margin-top: 0; }
+  .card p { color: var(--muted); margin: 0.3rem 0 0; font-size: 0.95rem; }
+  .stamp { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; margin: 0.6rem 0; }
+  th, td { border: 1px solid var(--border); padding: 0.55rem 0.7rem; text-align: left; font-size: 0.95rem; vertical-align: top; }
+  th { background: #181b22; color: var(--muted); font-weight: 600; }
+  .price { font-size: 1.4rem; font-weight: 700; }
+  .strike { color: var(--muted); text-decoration: line-through; }
+  footer { color: var(--muted); font-size: 0.9rem; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  .countdown { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <span class="pill">EU AI Act · 2 Aug 2026 deadline</span>
+  <h1>EU AI Act conformity, in a single API call.</h1>
+  <p class="lede">
+    AegisAI turns your model evaluations into a <strong>regulator-defensible Annex IV binder</strong> —
+    Annex III classification, FRIA under Article 27, ISO/IEC 42001 control coverage,
+    post-market monitoring — cryptographically signed, deterministic, audit-ready.
+  </p>
+  <div>
+    <a class="cta" href="./demo-binder.html" target="_blank">See a sample binder →</a>
+    <a class="cta secondary" href="mailto:contact@aegisai.eu?subject=Free%20pilot%20%E2%80%94%20AegisAI">Apply for a free pilot</a>
+  </div>
+  <p class="stamp" style="margin-top: 1rem;">
+    <span class="countdown">High-risk obligations apply 2 Aug 2026.</span>
+    Penalties up to €35M or 7% of global turnover.
+  </p>
+</header>
+
+<section>
+  <h2>Why this exists</h2>
+  <p>
+    Most banks have 50 model-eval reports scattered across Confluence, Notion, and email,
+    and call it AI governance. A supervisor or Notified Body wants <em>one</em> signed binder
+    per AI system, mapped to each obligation, reproducible from primary evidence.
+    That gap is what AegisAI closes.
+  </p>
+</section>
+
+<section>
+  <h2>What you get</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Annex III risk classification</h3>
+      <p>Decision tree against Articles 5–7 and Annex III. Signed RiskClassification record.</p>
+    </div>
+    <div class="card">
+      <h3>Annex IV technical documentation</h3>
+      <p>Print-to-PDF binder, deterministic, signature-verifiable, ISO 42001-mapped.</p>
+    </div>
+    <div class="card">
+      <h3>FRIA workflow (Article 27)</h3>
+      <p>Fundamental Rights Impact Assessment, DRAFT → IN_REVIEW → APPROVED state machine.</p>
+    </div>
+    <div class="card">
+      <h3>Post-market monitoring (Article 72)</h3>
+      <p>Webhook ingestion + 15-day Article 73 incident clock for serious incidents.</p>
+    </div>
+    <div class="card">
+      <h3>Hash-chained audit log</h3>
+      <p>Every state change captured. Tamper-evident chain across the conformity history.</p>
+    </div>
+    <div class="card">
+      <h3>Deterministic policy kernel</h3>
+      <p>Same evidence + policy + parameters → same Merkle root, same signature. Reproducible.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>How a pilot runs (8 weeks)</h2>
+  <table>
+    <tr><th>Week 1</th><td>Onboarding. Pick one AI system. NDA + LOI in place.</td></tr>
+    <tr><th>Week 2</th><td>Map your evidence (model evals, fairness tests, audits) to AegisAI evidence types. Run Annex III questionnaire.</td></tr>
+    <tr><th>Week 3</th><td>First evaluation against Articles 5, 9, 10. Review gaps.</td></tr>
+    <tr><th>Week 4</th><td>Add Articles 13, 14, 15. Identify weakest evidence.</td></tr>
+    <tr><th>Week 5</th><td>FRIA workshop. Draft FRIA in AegisAI.</td></tr>
+    <tr><th>Week 6</th><td>First Annex IV binder. Walkthrough with your champion.</td></tr>
+    <tr><th>Week 7</th><td>Iterate. v2 binder. Wire post-market monitoring webhook.</td></tr>
+    <tr><th>Week 8</th><td>Final binder + readout to your CRO/CCO.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Pricing</h2>
+  <table>
+    <tr>
+      <th style="width: 30%">Tier</th>
+      <th>Scope</th>
+      <th style="width: 25%">Fee</th>
+    </tr>
+    <tr>
+      <td><strong>Free pilot</strong> · 3 slots</td>
+      <td>8 weeks · 1 AI system · run by founder</td>
+      <td><span class="price">€0</span></td>
+    </tr>
+    <tr>
+      <td>Paid pilot</td>
+      <td>8 weeks · 1 AI system · post-2 Aug 2026</td>
+      <td><span class="price">€25,000</span></td>
+    </tr>
+    <tr>
+      <td>Annual</td>
+      <td>Unlimited binders · ≤ 5 AI systems · post-2 Aug 2026</td>
+      <td><span class="price">€60,000+</span></td>
+    </tr>
+  </table>
+  <p class="stamp">
+    Free-pilot slots are reserved for EU-licensed banks, insurers, and lending fintechs deploying
+    AI in credit, underwriting, fraud, or AML/KYC. Email <a href="mailto:contact@aegisai.eu">contact@aegisai.eu</a>
+    to apply.
+  </p>
+</section>
+
+<section>
+  <h2>What's under the hood</h2>
+  <ul>
+    <li>Deterministic policy kernel — JSON-Logic over Zod-validated evidence claims.</li>
+    <li>Per-tenant Ed25519 signing keys. Provenance-bound Merkle leaves (claim + submitter + verifier).</li>
+    <li>Policy packs for Articles 5, 9, 10, 13, 14, 15. ISO/IEC 42001 Annex A control map.</li>
+    <li>Hash-chained, tamper-evident audit log.</li>
+    <li>SQLite (single-tenant) or Postgres (production). Docker-deployable.</li>
+    <li>EU-region hosting (Frankfurt / Dublin / Amsterdam) on request.</li>
+  </ul>
+</section>
+
+<footer>
+  Operated by <strong>[Your Name]</strong> ·
+  <a href="mailto:contact@aegisai.eu">contact@aegisai.eu</a> ·
+  <a href="https://www.linkedin.com/in/[your-handle]">LinkedIn</a>
+</footer>
+</main>
+</body>
+</html>

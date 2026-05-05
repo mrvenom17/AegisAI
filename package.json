@@ -8,10 +8,10 @@
     "aegisai": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/copy-assets.mjs",
     "start": "node dist/api/server.js",
     "dev": "tsc --watch & node --watch dist/api/server.js",
-    "example": "tsc && node dist/examples/end-to-end-example.js",
+    "demo:binder": "npm run build && node scripts/generate-demo-binder.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts",

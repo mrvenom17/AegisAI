@@ -130,6 +130,17 @@ npm test
 npm run build
 ```
 
+## Sales / GTM artefacts
+
+Everything you need to start running the launch plan tonight is in `marketing/`. Start with `marketing/day-1-checklist.md`. Run `npm run demo:binder` to (re)generate the fictional-bank Annex IV binder you'll attach to every email and DM.
+
+```bash
+npm run demo:binder
+# → marketing/demo-binder.html
+```
+
+See `PRODUCT.md` for vertical / pricing / 90-day GTM and `marketing/README.md` for the artefact map.
+
 ## License
 
 UNLICENSED — Internal Use Only.
