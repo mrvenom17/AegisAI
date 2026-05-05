@@ -75,3 +75,81 @@ Out of MVP (v0.2+):
 - **Brussels Effect**: EU AI Act is becoming the global default — same product sells into UK, APAC, Brazil over 24 months.
 - **Defensible wedge**: deterministic policy kernel + signed artifact pipeline is the *audit-defensible* layer competitors blur into dashboards.
 - **Compounding policy library**: every customer expands the rule library — moat thickens with usage.
+
+## Step-by-Step Workflow: How to Run and Use AegisAI
+
+This workflow describes how to initialize the AegisAI engine, register an AI system, and generate a regulatory-defensible Annex IV conformity binder.
+
+### Phase 1: Setup & Initialization
+
+1. **Start the Application Server**
+   You can run AegisAI natively or via Docker.
+   *Using Docker (Recommended for quick start):*
+   ```bash
+   docker compose up -d
+   ```
+   *Using Node natively:*
+   ```bash
+   npm install
+   npm run build
+   AEGIS_ADMIN_TOKEN=change-me npm start
+   ```
+
+2. **Register a Tenant (Organization)**
+   Create a tenant to isolate your records and generate a unique API key for cryptographic signatures.
+   ```bash
+   curl -X POST http://localhost:8080/v1/orgs \
+     -H 'x-admin-token: change-me' \
+     -H 'content-type: application/json' \
+     -d '{"name": "Example Bank"}'
+   ```
+   *Note:* Save the returned `API_KEY`. It is required for all subsequent API calls.
+
+### Phase 2: Core Usage & Conformity Workflow
+
+1. **Register the AI System**
+   Define the AI model, its purpose, and deployment environment.
+   ```bash
+   SYSTEM_ID=$(curl -s -X POST http://localhost:8080/v1/systems \
+     -H "x-api-key: $API_KEY" -H 'content-type: application/json' \
+     -d '{
+       "system_id": "credit-scorer-v3",
+       "version": "3.1.0",
+       "model_name": "GBM",
+       "model_version": "v3.1",
+       "intended_purpose": "consumer credit scoring",
+       "deployment": {"environment":"PRODUCTION","region":"eu-west-1","deployment_date":"2026-04-01T00:00:00Z"}
+     }' | jq -r .id)
+   ```
+
+2. **Classify the AI System (Annex III)**
+   Run the classification endpoint to determine the risk tier under the EU AI Act (e.g., HIGH_RISK vs MINIMAL_RISK).
+   ```bash
+   curl -s -X POST http://localhost:8080/v1/systems/$SYSTEM_ID/classify \
+     -H "x-api-key: $API_KEY" -H 'content-type: application/json' \
+     -d '{ "questionnaire": { "creditworthiness_or_credit_scoring": true } }'
+   ```
+
+3. **Run Conformity Evaluation**
+   Submit an evidence bundle. The deterministic policy engine will evaluate it against the EU AI Act (Articles 5, 9, 10, etc.) and ISO 42001 controls.
+   ```bash
+   SNAP_ID=$(jq ".system_version_id = \"$SYSTEM_ID\"" evidence-bundle.json | \
+     curl -s -X POST http://localhost:8080/v1/evaluations \
+     -H "x-api-key: $API_KEY" -H 'content-type: application/json' \
+     -d @- | jq -r .id)
+   ```
+
+4. **Generate the Annex IV Binder**
+   Fetch the cryptographically signed HTML technical documentation.
+   ```bash
+   curl -s "http://localhost:8080/v1/binders/$SNAP_ID" -H "x-api-key: $API_KEY" > binder.html
+   open binder.html
+   ```
+
+### Phase 3: Sales & Demo Execution (GTM)
+
+For marketing and GTM purposes, you can instantly generate a demo Annex IV binder for a fictional bank without running the full API lifecycle.
+```bash
+npm run demo:binder
+```
+This produces `marketing/demo-binder.html` which you can print to PDF and attach to sales emails or share with design partners.

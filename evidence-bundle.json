@@ -1,0 +1,163 @@
+{
+  "system_version_id": "REPLACE_WITH_YOUR_SYSTEM_ID",
+  "packs": ["art-5", "art-9", "art-10", "art-13", "art-14", "art-15"],
+  "parameters": {},
+  "evidence": [
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Maria Papadakis (Chief Compliance Officer)",
+      "source_system": "compliance-attestation-system",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "system_classification",
+        "is_social_scoring": false,
+        "is_real_time_biometric": false,
+        "uses_subliminal_techniques": false,
+        "exploits_vulnerabilities": false,
+        "emotion_recognition_workplace_or_education": false,
+        "attestation_signed_by": "cco@example.com"
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Dimitris Stavrakis (Head of Model Risk)",
+      "source_system": "mrm-platform",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "risk_management_system",
+        "documented_at": "2026-04-01T00:00:00Z",
+        "process_owner": "Head of Model Risk Management",
+        "review_cadence_months": 6
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Dimitris Stavrakis (Head of Model Risk)",
+      "source_system": "mrm-platform",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "risk_register",
+        "entry_count": 23,
+        "last_updated_at": "2026-05-01T00:00:00Z",
+        "covers_foreseeable_misuse": true
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Dimitris Stavrakis (Head of Model Risk)",
+      "source_system": "mrm-platform",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "residual_risk_assessment",
+        "overall_residual_risk_score": 0.27,
+        "approver": "Chief Risk Officer"
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Aikaterini Vlachou (Lead Data Scientist)",
+      "source_system": "feature-store",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "data_governance_record",
+        "training_dataset_id": "ds-credit-train-2024Q4",
+        "validation_dataset_id": "ds-credit-val-2024Q4",
+        "test_dataset_id": "ds-credit-test-2024Q4",
+        "design_choices_documented": true,
+        "data_sources_documented": true,
+        "preprocessing_documented": true
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Aikaterini Vlachou (Lead Data Scientist)",
+      "source_system": "fairness-pipeline",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "bias_assessment",
+        "examined_protected_attributes": ["age", "gender", "nationality_eu_non_eu"],
+        "max_disparity_ratio": 1.18,
+        "assessed_at": "2026-05-01T00:00:00Z"
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Aikaterini Vlachou (Lead Data Scientist)",
+      "source_system": "data-quality-pipeline",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "data_quality_metrics",
+        "completeness": 0.991,
+        "label_error_rate": 0.014
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Maria Papadakis (Chief Compliance Officer)",
+      "source_system": "documentation-system",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "instructions_for_use",
+        "provider_identity": "Hellenic Atlantic Bank S.A. — Model Risk Office",
+        "intended_purpose": "Consumer credit decisioning for personal loans in Greece, Cyprus, Portugal, Ireland",
+        "performance_characteristics": "Population-level Gini 0.62, AUC 0.89, calibration slope 1.03 ± 0.04",
+        "known_limitations": "Reduced accuracy for thin-file applicants (<6 months credit history). Not suitable for SME lending or mortgage decisioning.",
+        "expected_lifetime": "24 months from deployment date, with quarterly recalibration",
+        "human_oversight_measures": "Credit officer review for declines under 25, high-disagreement routing, monthly bias review",
+        "version": "3.4.2"
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Konstantinos Doukas (Head of Consumer Credit)",
+      "source_system": "oversight-control-system",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "human_oversight",
+        "designated_role": "Regional Credit Officer",
+        "stop_or_override_available": true,
+        "training_completed": true,
+        "monitoring_dashboards": ["Decision-distribution", "Disparity-by-region", "Disagreement-routing"],
+        "automation_bias_training_completed_at": "2026-01-01T00:00:00Z",
+        "automation_bias_training_in_period": true
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Aikaterini Vlachou (Lead Data Scientist)",
+      "source_system": "mlops-evaluation-pipeline",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "accuracy_metric",
+        "accuracy": 0.962,
+        "test_dataset_size": 28500,
+        "test_date": "2026-05-01T00:00:00Z"
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Sofia Andreadis (Security Architect)",
+      "source_system": "robustness-test-framework",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "robustness_test_result",
+        "score": 0.93,
+        "test_type": "adversarial-and-out-of-distribution",
+        "test_date": "2026-05-01T00:00:00Z"
+      }
+    },
+    {
+      "type": "STRUCTURED_JSON",
+      "submitted_by": "Sofia Andreadis (Security Architect)",
+      "source_system": "security-audit-system",
+      "observed_at": "2026-05-01T00:00:00Z",
+      "content": {
+        "claim_type": "cybersecurity_audit",
+        "passed": true,
+        "audit_date": "2026-05-01T00:00:00Z",
+        "auditor": "KPMG Greece — Financial Services Cyber Audit",
+        "findings": []
+      }
+    }
+  ]
+}
