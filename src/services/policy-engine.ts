@@ -107,7 +107,16 @@ export class PolicyEngine {
         evaluated_at: evaluatedAt,
         evidence_claim_refs: relevantClaims.map((c) => c.id),
         parameters_used: mergedParameters,
-        logic_result: logicResult ?? failureReason
+        logic_result: logicResult ?? failureReason,
+        verified_claims_used: relevantClaims.map((c) => ({
+          claim_id: c.id,
+          claim_type: c.claim_type,
+          evidence_vault_ref: c.evidence_vault_ref,
+          submitted_by: c.submitted_by,
+          source_system: c.source_system,
+          observed_at: c.observed_at,
+          claim_data: c.claim_data
+        }))
       });
     }
 

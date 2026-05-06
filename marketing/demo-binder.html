@@ -9,6 +9,7 @@
   h1 { font-size: 1.6rem; border-bottom: 2px solid #111; padding-bottom: 0.5rem; }
   h2 { font-size: 1.25rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 0.25rem; }
   h3 { font-size: 1rem; margin-top: 1rem; }
+  h4 { font-size: 0.95rem; margin: 0.75rem 0 0.25rem; color: #333; }
   table { border-collapse: collapse; width: 100%; margin: 0.5rem 0; }
   th, td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; font-size: 0.92rem; }
   th { background: #f5f5f5; }
@@ -25,6 +26,20 @@
   .pill-minimal { background: #e8f5e9; color: #1b5e20; }
   .pill-gpai { background: #e3f2fd; color: #0d47a1; }
   .pill-unclassified { background: #eceff1; color: #455a64; }
+  .banner { padding: 0.75rem 1rem; border-radius: 0.4rem; margin: 0.75rem 0; border: 1px solid; font-size: 0.92rem; }
+  .banner-warn { background: #fff8e1; border-color: #f9a825; color: #6a4e00; }
+  .banner-error { background: #ffebee; border-color: #c62828; color: #861818; }
+  .banner-info { background: #e3f2fd; border-color: #1565c0; color: #0d3a73; }
+  .small { font-size: 0.85rem; }
+  ul.remediation { margin: 0.25rem 0 0.75rem 1.25rem; padding: 0; }
+  ul.remediation li { margin: 0.15rem 0; font-size: 0.9rem; }
+  .ev { margin-bottom: 0.5rem; }
+  .ev-head { font-weight: 600; font-size: 0.88rem; }
+  .ev-prov { font-size: 0.8rem; color: #555; margin-bottom: 0.2rem; }
+  ul.kv { margin: 0.15rem 0 0.25rem 1rem; padding: 0; list-style: none; }
+  ul.kv li { font-size: 0.85rem; margin: 0.05rem 0; word-break: break-word; }
+  ul.kv li strong { display: inline-block; min-width: 11rem; color: #333; }
+  .att-block { background: #f3f8ff; border-left: 3px solid #1565c0; padding: 0.4rem 0.6rem; margin: 0.4rem 0; }
   @media print {
     body { margin: 1cm; }
     h2 { page-break-after: avoid; }
@@ -35,8 +50,9 @@
 <body>
 <header>
   <h1>EU AI Act Annex IV — Technical Documentation</h1>
-  <p class="meta">Generated 2026-05-05T17:51:39.589Z · Snapshot ID <code>dfb9fff1-6b1c-53e6-8bf8-75667bad1a9d</code></p>
+  <p class="meta">Generated 2026-05-06T13:50:35.433Z · Snapshot ID <code>e0a3c587-9686-5ede-b577-65b439191122</code></p>
   <p class="meta">This document is generated deterministically from a signed ComplianceSnapshot. Tampering will invalidate the cryptographic signature recorded in §10.</p>
+  
 </header>
 <h2>1. General description</h2>
 <table>
@@ -45,6 +61,7 @@
   <tr><th>Model</th><td>AtlantisCredit-GBM @ v3.4.2</td></tr>
   <tr><th>Intended purpose</th><td>Consumer credit decisioning for unsecured personal loans (€500–€50,000). Used by the bank to approve, decline, or refer loan applications across retail channels in Greece, Cyprus, Portugal, and Ireland.</td></tr>
   <tr><th>Risk tier</th><td><span class="pill pill-high">HIGH_RISK</span></td></tr>
+  <tr><th>Effective conformity status</th><td><strong class="pass">COMPLIANT</strong></td></tr>
   <tr><th>Deployment</th><td>PRODUCTION · eu-west-1 · since 2025-09-01T00:00:00Z</td></tr>
 </table>
 <h2>2. Risk classification (Article 6 / Annex III)</h2>
@@ -56,137 +73,208 @@
       <td>Creditworthiness / credit scoring</td>
     </tr></tbody>
 </table>
-<p class="meta">Classification ID <code>cc7f4aea-f851-5d55-8947-542b6ed06e50</code>, classified at 2026-05-05T17:51:39.564Z.</p>
+<p class="meta">Classification ID <code>948e554e-7a9f-5ed2-b3df-204664e71508</code>, classified at 2026-05-06T13:50:35.399Z.</p>
 <h2>3. Detailed description of system elements and processes</h2>
 <p>Compliance evaluation executed against the following policy sets:</p>
 <ul><li>EU AI Act — Article 5: Prohibited Practices (v1.1.0)</li><li>EU AI Act — Article 9: Risk Management System (v1.0.0)</li><li>EU AI Act — Article 10: Data and Data Governance (v1.0.0)</li><li>EU AI Act — Article 13: Transparency to Deployers (v1.0.0)</li><li>EU AI Act — Article 14: Human Oversight (v1.0.0)</li><li>EU AI Act — Article 15: Accuracy, Robustness and Cybersecurity (v1.1.0)</li></ul>
-<p>Final status: <strong class="pass">COMPLIANT</strong></p>
+<p>Recorded snapshot status: <strong class="pass">COMPLIANT</strong></p>
+
 <h2>4. Monitoring, functioning and control specifications — rule evaluations</h2>
+<p class="meta">Each row shows the rule outcome and the substantive evidence values that drove it. The full claim payloads are bound by the Evidence Merkle root in §10.</p>
 <table>
-  <thead><tr><th>Obligation</th><th>Control</th><th>Rule</th><th>Outcome</th><th>Failure mode</th><th>Claims</th></tr></thead>
+  <thead><tr><th>Obligation</th><th>Control</th><th>Rule</th><th>Outcome</th><th>Failure mode</th><th>Evidence summary</th></tr></thead>
   <tbody><tr>
       <td>EU_AI_ACT_ART_5_1_C</td>
       <td>ART_5_SOCIAL_SCORING</td>
       <td>ART_5_NO_SOCIAL_SCORING</td>
       <td class="pass">PASS</td>
       <td>BLOCK</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">system_classification</div>
+        <div class="ev-prov">submitted by Maria Papadakis (Chief Compliance Officer) · from <code>compliance-attestation-system</code> · observed 2026-05-04T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Is Social Scoring:</strong> false</li><li><strong>Is Real Time Biometric:</strong> false</li><li><strong>Uses Subliminal Techniques:</strong> false</li><li><strong>Exploits Vulnerabilities:</strong> false</li><li><strong>Emotion Recognition Workplace Or Education:</strong> false</li><li><strong>Attestation Signed By:</strong> cco@hellenic-atlantic.example</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_5_1_H</td>
       <td>ART_5_REAL_TIME_BIOMETRIC</td>
       <td>ART_5_NO_REAL_TIME_BIOMETRIC</td>
       <td class="pass">PASS</td>
       <td>BLOCK</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">system_classification</div>
+        <div class="ev-prov">submitted by Maria Papadakis (Chief Compliance Officer) · from <code>compliance-attestation-system</code> · observed 2026-05-04T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Is Social Scoring:</strong> false</li><li><strong>Is Real Time Biometric:</strong> false</li><li><strong>Uses Subliminal Techniques:</strong> false</li><li><strong>Exploits Vulnerabilities:</strong> false</li><li><strong>Emotion Recognition Workplace Or Education:</strong> false</li><li><strong>Attestation Signed By:</strong> cco@hellenic-atlantic.example</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_5_1_A</td>
       <td>ART_5_SUBLIMINAL</td>
       <td>ART_5_NO_SUBLIMINAL</td>
       <td class="pass">PASS</td>
       <td>BLOCK</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">system_classification</div>
+        <div class="ev-prov">submitted by Maria Papadakis (Chief Compliance Officer) · from <code>compliance-attestation-system</code> · observed 2026-05-04T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Is Social Scoring:</strong> false</li><li><strong>Is Real Time Biometric:</strong> false</li><li><strong>Uses Subliminal Techniques:</strong> false</li><li><strong>Exploits Vulnerabilities:</strong> false</li><li><strong>Emotion Recognition Workplace Or Education:</strong> false</li><li><strong>Attestation Signed By:</strong> cco@hellenic-atlantic.example</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_5_1_B</td>
       <td>ART_5_VULNERABILITIES</td>
       <td>ART_5_NO_VULN_EXPLOITATION</td>
       <td class="pass">PASS</td>
       <td>BLOCK</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">system_classification</div>
+        <div class="ev-prov">submitted by Maria Papadakis (Chief Compliance Officer) · from <code>compliance-attestation-system</code> · observed 2026-05-04T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Is Social Scoring:</strong> false</li><li><strong>Is Real Time Biometric:</strong> false</li><li><strong>Uses Subliminal Techniques:</strong> false</li><li><strong>Exploits Vulnerabilities:</strong> false</li><li><strong>Emotion Recognition Workplace Or Education:</strong> false</li><li><strong>Attestation Signed By:</strong> cco@hellenic-atlantic.example</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_5_1_F</td>
       <td>ART_5_EMOTION_RECOGNITION</td>
       <td>ART_5_NO_EMOTION_AT_WORK_OR_SCHOOL</td>
       <td class="pass">PASS</td>
       <td>BLOCK</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">system_classification</div>
+        <div class="ev-prov">submitted by Maria Papadakis (Chief Compliance Officer) · from <code>compliance-attestation-system</code> · observed 2026-05-04T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Is Social Scoring:</strong> false</li><li><strong>Is Real Time Biometric:</strong> false</li><li><strong>Uses Subliminal Techniques:</strong> false</li><li><strong>Exploits Vulnerabilities:</strong> false</li><li><strong>Emotion Recognition Workplace Or Education:</strong> false</li><li><strong>Attestation Signed By:</strong> cco@hellenic-atlantic.example</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_9</td>
       <td>ART_9_RMS_DOCUMENTED</td>
       <td>ART_9_RMS_DOCUMENTED</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">risk_management_system</div>
+        <div class="ev-prov">submitted by Dimitris Stavrakis (Head of Model Risk) · from <code>mrm-platform</code> · observed 2026-04-29T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Documented At:</strong> 2026-03-07T13:50:35.405Z</li><li><strong>Process Owner:</strong> Head of Model Risk Management</li><li><strong>Review Cadence Months:</strong> 6</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_9</td>
       <td>ART_9_RISK_REGISTER</td>
       <td>ART_9_RISK_REGISTER_PRESENT</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">risk_register</div>
+        <div class="ev-prov">submitted by Dimitris Stavrakis (Head of Model Risk) · from <code>mrm-platform</code> · observed 2026-04-29T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Entry Count:</strong> 23</li><li><strong>Last Updated At:</strong> 2026-04-29T13:50:35.405Z</li><li><strong>Covers Foreseeable Misuse:</strong> true</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_9</td>
       <td>ART_9_RESIDUAL_RISK_ACCEPTABLE</td>
       <td>ART_9_RESIDUAL_RISK_BELOW_THRESHOLD</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">residual_risk_assessment</div>
+        <div class="ev-prov">submitted by Dimitris Stavrakis (Head of Model Risk) · from <code>mrm-platform</code> · observed 2026-04-22T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Overall Residual Risk Score:</strong> 0.27</li><li><strong>Approver:</strong> Chief Risk Officer</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_10</td>
       <td>ART_10_DATA_GOVERNANCE_DOC</td>
       <td>ART_10_DATA_GOVERNANCE_PRESENT</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">data_governance_record</div>
+        <div class="ev-prov">submitted by Aikaterini Vlachou (Lead Data Scientist) · from <code>feature-store</code> · observed 2026-04-15T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Training Dataset Id:</strong> ds-credit-train-2024Q4</li><li><strong>Validation Dataset Id:</strong> ds-credit-val-2024Q4</li><li><strong>Test Dataset Id:</strong> ds-credit-test-2024Q4</li><li><strong>Design Choices Documented:</strong> true</li><li><strong>Data Sources Documented:</strong> true</li><li><strong>Preprocessing Documented:</strong> true</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_10</td>
       <td>ART_10_BIAS_EXAMINATION</td>
       <td>ART_10_BIAS_EXAMINED</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">bias_assessment</div>
+        <div class="ev-prov">submitted by Aikaterini Vlachou (Lead Data Scientist) · from <code>fairness-pipeline</code> · observed 2026-04-15T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Examined Protected Attributes:</strong> age, gender, nationality_eu_non_eu</li><li><strong>Max Disparity Ratio:</strong> 1.18</li><li><strong>Assessed At:</strong> 2026-04-15T13:50:35.405Z</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_10</td>
       <td>ART_10_DATA_QUALITY</td>
       <td>ART_10_DATA_QUALITY_THRESHOLD</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">data_quality_metrics</div>
+        <div class="ev-prov">submitted by Aikaterini Vlachou (Lead Data Scientist) · from <code>data-quality-pipeline</code> · observed 2026-04-15T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Completeness:</strong> 0.991</li><li><strong>Label Error Rate:</strong> 0.014</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_13</td>
       <td>ART_13_INSTRUCTIONS_FOR_USE</td>
       <td>ART_13_IFU_PRESENT_AND_COMPLETE</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">instructions_for_use</div>
+        <div class="ev-prov">submitted by Maria Papadakis (Chief Compliance Officer) · from <code>documentation-system</code> · observed 2026-04-06T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Provider Identity:</strong> Hellenic Atlantic Bank S.A. — Model Risk Office, 12 Vasilissis Sofias Avenue, 10674 Athens, Greece</li><li><strong>Performance Characteristics:</strong> Population-level Gini 0.62, AUC 0.89, calibration slope 1.03 ± 0.04 on the 2024-Q4 holdout (28,500 records). Demographic-parity ratio: 1.18 across age, gender, and EU/non-EU nationality buckets.</li><li><strong>Expected Lifetime:</strong> 24 months from deployment date (2025-09-01), with mandatory quarterly recalibration and an annual bias review.</li><li><strong>Version:</strong> 3.4.2</li><li class="meta">Full Article 13 instructions reproduced verbatim in §7.</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_14</td>
       <td>ART_14_OVERSIGHT_MEASURES</td>
       <td>ART_14_OVERSIGHT_MEASURES_DEFINED</td>
       <td class="pass">PASS</td>
       <td>BLOCK</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">human_oversight</div>
+        <div class="ev-prov">submitted by Konstantinos Doukas (Head of Consumer Credit) · from <code>oversight-control-system</code> · observed 2026-04-29T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Designated Role:</strong> Regional Credit Officer</li><li><strong>Stop Or Override Available:</strong> true</li><li><strong>Training Completed:</strong> true</li><li><strong>Monitoring Dashboards:</strong> Decision-distribution, Disparity-by-region, Disagreement-routing</li><li><strong>Automation Bias Training Completed At:</strong> 2026-01-06T13:50:35.405Z</li><li><strong>Automation Bias Training In Period:</strong> true</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_14</td>
       <td>ART_14_AUTOMATION_BIAS_AWARENESS</td>
       <td>ART_14_AUTOMATION_BIAS_TRAINING</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">human_oversight</div>
+        <div class="ev-prov">submitted by Konstantinos Doukas (Head of Consumer Credit) · from <code>oversight-control-system</code> · observed 2026-04-29T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Designated Role:</strong> Regional Credit Officer</li><li><strong>Stop Or Override Available:</strong> true</li><li><strong>Training Completed:</strong> true</li><li><strong>Monitoring Dashboards:</strong> Decision-distribution, Disparity-by-region, Disagreement-routing</li><li><strong>Automation Bias Training Completed At:</strong> 2026-01-06T13:50:35.405Z</li><li><strong>Automation Bias Training In Period:</strong> true</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_15</td>
       <td>ART_15_ACCURACY</td>
       <td>ART_15_ACCURACY_THRESHOLD</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">accuracy_metric</div>
+        <div class="ev-prov">submitted by Aikaterini Vlachou (Lead Data Scientist) · from <code>mlops-evaluation-pipeline</code> · observed 2026-04-22T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Accuracy:</strong> 0.962</li><li><strong>Test Dataset Size:</strong> 28500</li><li><strong>Test Date:</strong> 2026-04-22T13:50:35.405Z</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_15</td>
       <td>ART_15_ROBUSTNESS</td>
       <td>ART_15_ROBUSTNESS_TEST</td>
       <td class="pass">PASS</td>
       <td>FAIL</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">robustness_test_result</div>
+        <div class="ev-prov">submitted by Sofia Andreadis (Security Architect) · from <code>robustness-test-framework</code> · observed 2026-04-15T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Score:</strong> 0.93</li><li><strong>Test Type:</strong> adversarial-and-out-of-distribution</li><li><strong>Test Date:</strong> 2026-04-15T13:50:35.405Z</li></ul>
+      </div></td>
     </tr><tr>
       <td>EU_AI_ACT_ART_15</td>
       <td>ART_15_CYBERSECURITY</td>
       <td>ART_15_CYBERSECURITY_AUDIT</td>
       <td class="pass">PASS</td>
       <td>BLOCK</td>
-      <td>1</td>
+      <td><div class="ev">
+        <div class="ev-head">cybersecurity_audit</div>
+        <div class="ev-prov">submitted by Sofia Andreadis (Security Architect) · from <code>security-audit-system</code> · observed 2026-04-08T13:50:35.405Z</div>
+        <ul class="kv"><li><strong>Passed:</strong> true</li><li><strong>Audit Date:</strong> 2026-04-08T13:50:35.405Z</li><li><strong>Auditor:</strong> KPMG Greece — Financial Services Cyber Audit</li><li><strong>Findings:</strong> </li></ul>
+      </div></td>
     </tr></tbody>
 </table>
 <h2>5. Risk management system &amp; FRIA</h2>
-<p>FRIA <code>40af5791-a3c3-459e-b9cc-ecd52041b293</code> · Status <strong>APPROVED</strong> · Deployer Hellenic Atlantic Bank S.A.</p>
+<p>FRIA <code>bc45ce31-544a-4520-83db-10615bb615df</code> · Status <strong>APPROVED</strong> · Deployer Hellenic Atlantic Bank S.A.</p>
+
 <h3>Risks identified</h3>
 <table><thead><tr><th>Risk</th><th>Likelihood</th><th>Severity</th><th>Affected rights</th></tr></thead><tbody><tr>
         <td>Disparate impact on younger applicants (&lt;25) due to thin-file bias.</td>
@@ -205,219 +293,275 @@
         <td>Data protection</td>
       </tr></tbody></table>
 <h3>Mitigations</h3>
-<ul><li>Shadow-mode review of all decline decisions for under-25 applicants by a credit officer for the first 90 days post-deployment. — owner: Head of Consumer Credit, review: Weekly during shadow window, monthly thereafter</li><li>High-disagreement decisions (model variance &gt; 0.15) routed to human credit officer. — owner: Model Risk Manager, review: Continuous</li><li>GDPR Article 22 explanation generated and delivered with every adverse decision. — owner: Data Protection Officer, review: Quarterly audit</li></ul>
+<ul><li>Shadow-mode review of all decline decisions for under-25 applicants by a credit officer for the first 12 months of deployment. — owner: Head of Consumer Credit, review: Weekly during shadow window, monthly thereafter<br><span class="pass small">[ACTIVE]</span> <span class="meta">from 2025-09-01T00:00:00Z, 365-day window (until 2026-09-01T00:00:00.000Z) — currently ACTIVE</span></li><li>High-disagreement decisions (model variance &gt; 0.15) routed to human credit officer. — owner: Model Risk Manager, review: Continuous<br><span class="pass small">[INDEFINITE]</span> <span class="meta">no time bounds recorded — treated as INDEFINITE</span></li><li>GDPR Article 22 explanation generated and delivered with every adverse decision. — owner: Data Protection Officer, review: Quarterly audit<br><span class="pass small">[INDEFINITE]</span> <span class="meta">no time bounds recorded — treated as INDEFINITE</span></li></ul>
 <h3>Human oversight measures</h3>
 <ul><li>Designated credit officer per region with stop-decision authority within 4 hours of any flagged case.</li><li>Daily monitoring dashboard of approval/decline distributions vs. baseline.</li><li>Mandatory automation-bias training for credit officers, refreshed annually.</li><li>Weekly review of complaints lodged against AI-driven decisions.</li></ul>
-<h2>6. Testing procedures &amp; warnings</h2><p>No warnings recorded.</p>
-<h2>7. Instructions for use</h2>
-<p>Instructions for use are documented under EU AI Act Article 13 obligations evaluated above. The provider supplies them as Article 13 evidence; this section reproduces the version of record at evaluation time.</p>
-<p class="meta">Snapshot timestamp 2026-05-05T17:51:39.576Z.</p>
+<h2>6. Testing procedures &amp; warnings</h2>
+<p class="meta">No engine warnings recorded at evaluation time.</p>
+<h2>7. Instructions for use (Article 13)</h2>
+<p class="meta">Reproduced from the <code>instructions_for_use</code> evidence claim of record at evaluation time (2026-04-06T13:50:35.405Z).</p>
+<table><tr><th>Provider Identity</th><td>Hellenic Atlantic Bank S.A. — Model Risk Office, 12 Vasilissis Sofias Avenue, 10674 Athens, Greece</td></tr><tr><th>Intended Purpose</th><td>Consumer credit decisioning for unsecured personal loans (€500–€50,000) for resident retail customers in Greece, Cyprus, Portugal, and Ireland.</td></tr><tr><th>Performance Characteristics</th><td>Population-level Gini 0.62, AUC 0.89, calibration slope 1.03 ± 0.04 on the 2024-Q4 holdout (28,500 records). Demographic-parity ratio: 1.18 across age, gender, and EU/non-EU nationality buckets.</td></tr><tr><th>Known Limitations</th><td>Reduced accuracy for thin-file applicants (&lt;6 months credit history). Not validated for SME lending, mortgage decisioning, or non-resident applicants. Prediction reliability degrades after 90 days without recalibration.</td></tr><tr><th>Expected Lifetime</th><td>24 months from deployment date (2025-09-01), with mandatory quarterly recalibration and an annual bias review.</td></tr><tr><th>Human Oversight Measures</th><td>Credit officer review for all declines for applicants under 25; high-disagreement routing (model variance &gt; 0.15) to a human officer; monthly bias review by Model Risk Management; daily distribution monitoring against baseline.</td></tr><tr><th>Version</th><td>3.4.2</td></tr><tr><th>Input Specifications</th><td>37 features: 12 bureau, 18 transactional, 7 customer-profile. All inputs validated against the deployment-time feature schema; out-of-range or missing inputs trigger a hard reject and a rule for human review.</td></tr><tr><th>Output Specifications</th><td>Three-class output: APPROVE, REFER (human review), DECLINE. Each output carries a probability score (0–1) and a top-3 contributing-feature list (Article 13 transparency).</td></tr><tr><th>Training Data Summary</th><td>Training corpus: 412,000 closed loans 2018–2023 across the four target jurisdictions. Excluded: bankruptcy cohort, customers with active fraud markers, applicants under 18 at origination.</td></tr></table>
 <h2>8. Post-market monitoring (Article 72)</h2>
-<table><thead><tr><th>Observed at</th><th>Type</th><th>Severity</th><th>Reported</th></tr></thead><tbody><tr>
-      <td>2026-05-04T17:51:39.578Z</td>
+<h3>At snapshot time (2026-05-06T13:50:35.412Z)</h3>
+<table><thead><tr><th>Observed at</th><th>Type</th><th>Severity</th><th>Reported (Art. 73)</th><th>Payload</th></tr></thead><tbody><tr>
+      <td>2026-03-22T13:50:35.405Z</td>
       <td>BIAS_OBSERVED</td>
-      <td>MEDIUM</td>
+      <td>HIGH</td>
+      <td>✓</td>
+      <td><code>{&quot;protected_attribute&quot;:&quot;age_under_25&quot;,&quot;disparity_ratio&quot;:1.32,&quot;threshold&quot;:1.25,&quot;affected_window&quot;:&quot;2026-03-15 → 2026-03-22&quot;,&quot;remediation&quot;:&quot;Thin-file decisioning suspended for 48 hours; bureau-side patch applied 2026-03-23; model itself unchanged (no substantial modification under EU AI Act). Independent re-validation against 2026-Q1 data confirmed disparity returned to 1.18.&quot;,&quot;note&quot;:&quot;Threshold breach detected by routine fairness monitoring; root cause traced to a third-party credit-bureau outage that returned biased thin-file scores. Resolution did not require model retraining.&quot;}</code></td>
+    </tr></tbody></table>
+<h3>Operational telemetry since snapshot</h3>
+<p class="meta">These signals were ingested after the snapshot was sealed and are <strong>not</strong> covered by its compliance evaluation. They will be folded into the next evaluation.</p>
+        <table><thead><tr><th>Observed at</th><th>Type</th><th>Severity</th><th>Reported (Art. 73)</th><th>Payload</th></tr></thead><tbody><tr>
+      <td>2026-05-06T13:53:35.412Z</td>
+      <td>INPUT_DRIFT</td>
+      <td>LOW</td>
       <td>—</td>
+      <td><code>{&quot;feature&quot;:&quot;months_since_first_credit&quot;,&quot;psi&quot;:0.06,&quot;threshold&quot;:0.1,&quot;note&quot;:&quot;Population shift, sub-threshold, will be folded into next quarterly re-evaluation.&quot;}</code></td>
     </tr><tr>
-      <td>2026-05-02T17:51:39.577Z</td>
+      <td>2026-05-06T13:51:35.412Z</td>
       <td>PERFORMANCE_DRIFT</td>
       <td>LOW</td>
       <td>—</td>
+      <td><code>{&quot;metric&quot;:&quot;Gini&quot;,&quot;observed&quot;:0.6,&quot;baseline&quot;:0.62,&quot;window&quot;:&quot;rolling-30d&quot;,&quot;note&quot;:&quot;Minor degradation within tolerance band; no action required.&quot;}</code></td>
     </tr></tbody></table>
 <h2>9. ISO/IEC 42001:2023 control coverage</h2>
-<table><thead><tr><th>Control</th><th>Name</th><th>Status</th><th>Rules</th></tr></thead><tbody><tr>
-      <td><code>A.2.2</code></td>
-      <td>AI policy</td>
-      <td class="pass">PASS</td>
-      <td>5</td>
-    </tr><tr>
-      <td><code>A.2.3</code></td>
-      <td>Alignment with other organizational policies</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.3.2</code></td>
-      <td>AI roles and responsibilities</td>
-      <td class="pass">PASS</td>
-      <td>2</td>
-    </tr><tr>
-      <td><code>A.3.3</code></td>
-      <td>Reporting of concerns</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.4.2</code></td>
-      <td>Resources for AI systems</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.4.3</code></td>
-      <td>Tooling resources</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.4.4</code></td>
-      <td>System and computing resources</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.4.5</code></td>
-      <td>Human resources</td>
-      <td class="pass">PASS</td>
-      <td>2</td>
-    </tr><tr>
-      <td><code>A.4.6</code></td>
-      <td>Data resources</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.5.2</code></td>
-      <td>AI system impact assessment process</td>
-      <td class="pass">PASS</td>
-      <td>2</td>
-    </tr><tr>
-      <td><code>A.5.3</code></td>
-      <td>Documentation of AI system impact assessments</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.5.4</code></td>
-      <td>Assessing AI system impact on individuals or groups</td>
-      <td class="pass">PASS</td>
-      <td>8</td>
-    </tr><tr>
-      <td><code>A.5.5</code></td>
-      <td>Assessing societal impacts of AI systems</td>
-      <td class="pass">PASS</td>
-      <td>3</td>
-    </tr><tr>
-      <td><code>A.6.1.2</code></td>
-      <td>Objectives for responsible AI development</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.6.1.3</code></td>
-      <td>Processes for responsible AI design and development</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.6.2.2</code></td>
-      <td>AI system requirements and specification</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.6.2.3</code></td>
-      <td>Documentation of AI system design and development</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.6.2.4</code></td>
-      <td>AI system verification and validation</td>
-      <td class="pass">PASS</td>
-      <td>3</td>
-    </tr><tr>
-      <td><code>A.6.2.5</code></td>
-      <td>AI system deployment</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.6.2.6</code></td>
-      <td>AI system operation and monitoring</td>
-      <td class="pass">PASS</td>
-      <td>3</td>
-    </tr><tr>
-      <td><code>A.6.2.7</code></td>
-      <td>AI system technical documentation</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.6.2.8</code></td>
-      <td>AI system event logs</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.7.2</code></td>
-      <td>Data management process</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.7.3</code></td>
-      <td>Acquisition of data</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.7.4</code></td>
-      <td>Quality of data for AI systems</td>
-      <td class="pass">PASS</td>
-      <td>2</td>
-    </tr><tr>
-      <td><code>A.7.5</code></td>
-      <td>Data provenance</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.7.6</code></td>
-      <td>Data preparation</td>
-      <td class="pass">PASS</td>
-      <td>3</td>
-    </tr><tr>
-      <td><code>A.8.2</code></td>
-      <td>System documentation and information for users</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.8.3</code></td>
-      <td>External reporting</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.8.4</code></td>
-      <td>Communication of incidents</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.8.5</code></td>
-      <td>Information for interested parties</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.9.2</code></td>
-      <td>Processes for responsible use of AI systems</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.9.3</code></td>
-      <td>Objectives for responsible use of AI systems</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.9.4</code></td>
-      <td>Intended use of the AI system</td>
-      <td class="pass">PASS</td>
-      <td>1</td>
-    </tr><tr>
-      <td><code>A.10.2</code></td>
-      <td>Allocating responsibilities for AI third parties</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.10.3</code></td>
-      <td>Suppliers</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr><tr>
-      <td><code>A.10.4</code></td>
-      <td>Customers</td>
-      <td class="partial">NOT_COVERED</td>
-      <td>0</td>
-    </tr></tbody></table>
+<p class="meta"><strong>Coverage summary:</strong> 19 automated PASS · 18 manually attested · 0 partial · 0 failing · 0 unattested gaps.</p>
+<div class="banner banner-info"><strong>No unattested control gaps.</strong> Every ISO 42001 Annex A control is covered by either a passing automated rule or a signed manual attestation.</div>
+
+<h3>Manual attestations on file</h3><div class="att-block"><strong>A.2.3</strong> Alignment with other organizational policies — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.415Z · <span class="meta">document: <code>risk-policy-2025-04.pdf</code></span><br><span class="small">AI Risk Policy v2.1 reviewed against the Group Operational Risk Policy (BAS-OP-2025-04) and Information Security Policy (BAS-IS-2025-09). No conflicts identified; alignment confirmed by Group Risk Committee 2026-02-12.</span></div><div class="att-block"><strong>A.3.3</strong> Reporting of concerns — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.416Z · <span class="meta">document: <code>reporting-of-concerns-procedure-v3.pdf</code></span><br><span class="small">Concerns about AI systems are reported via the Group Whistleblowing channel (BAS-WB-001) and a dedicated AI ethics inbox (ai-ethics@hellenic-atlantic.example). Annual disclosure included in the Audit Committee report.</span></div><div class="att-block"><strong>A.4.2</strong> Resources for AI systems — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.416Z · <span class="meta">document: <code>budget-mrm-2026.pdf</code></span><br><span class="small">€2.4M annual budget allocated to AI Model Risk Management (Model Risk Office, 9 FTE). Three-year forward plan approved by the Board Risk Committee 2025-12-08.</span></div><div class="att-block"><strong>A.4.3</strong> Tooling resources — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.417Z · <span class="meta">document: <code>ai-tooling-inventory-2026q2.pdf</code></span><br><span class="small">Approved AI tooling stack: Databricks 14.x for training, MLflow 2.10 for experiment tracking, AegisAI for compliance binder, internal Robustness-Test-Framework 1.4 for adversarial validation. Inventory reviewed quarterly by the AI Platform Lead.</span></div><div class="att-block"><strong>A.4.4</strong> System and computing resources — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.417Z · <span class="meta">document: <code>capacity-review-2026q1.pdf</code></span><br><span class="small">Production inference runs on a dedicated VPC in eu-west-1 (Frankfurt). Capacity reviewed monthly; current p99 latency 142ms, headroom 4×. DR failover validated 2026-04-15.</span></div><div class="att-block"><strong>A.4.6</strong> Data resources — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.418Z · <span class="meta">document: <code>data-catalog-credit-models.pdf</code></span><br><span class="small">Training, validation, and test datasets registered in the bank-wide Data Catalog (record IDs: ds-credit-train-2024Q4, ds-credit-val-2024Q4, ds-credit-test-2024Q4) with documented lineage, retention policy, and access controls.</span></div><div class="att-block"><strong>A.6.1.2</strong> Objectives for responsible AI development — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.418Z · <span class="meta">document: <code>ai-development-charter-2026.pdf</code></span><br><span class="small">Responsible-AI objectives codified in the AI Development Charter: (1) demographic parity within 1.25 ratio; (2) AUC ≥ 0.85 on holdout; (3) full Article 13 transparency to deployers; (4) no use of protected attributes as direct features. Reviewed annually.</span></div><div class="att-block"><strong>A.6.2.2</strong> AI system requirements and specification — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.419Z · <span class="meta">document: <code>prd-credit-ai-v3.pdf</code></span><br><span class="small">Functional and non-functional requirements documented in PRD-CREDIT-AI-V3 (version 3.4.2). Requirements traced to test cases via Jira link; 100% coverage at last release sign-off.</span></div><div class="att-block"><strong>A.6.2.3</strong> Documentation of AI system design and development — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.419Z · <span class="meta">document: <code>design-doc-credit-v3.pdf</code></span><br><span class="small">Design Document DD-CREDIT-V3 covers feature engineering, model architecture (gradient-boosted trees with 800 estimators), hyperparameter search space, and ensembling strategy. Reviewed and signed off by Head of Model Risk.</span></div><div class="att-block"><strong>A.6.2.5</strong> AI system deployment — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.420Z · <span class="meta">document: <code>deploy-runbook-ai-001.pdf</code></span><br><span class="small">Deployment runbook RB-DEPLOY-AI-001 covers CI/CD gates (unit tests, fairness gate, performance gate), blue/green rollout, and rollback procedure. Last rehearsed 2026-03-30.</span></div><div class="att-block"><strong>A.6.2.7</strong> AI system technical documentation — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.420Z · <span class="meta">document: <code>annex-iv-dossier-index.pdf</code></span><br><span class="small">Annex IV technical documentation maintained in this AegisAI binder, supplemented by internal artefacts (PRD, Design Document, Validation Report, Bias Audit Report, Cybersecurity Audit). Aggregated dossier handed to Internal Audit quarterly.</span></div><div class="att-block"><strong>A.6.2.8</strong> AI system event logs — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.421Z · <span class="meta">document: <code>event-log-schema-v4.pdf</code></span><br><span class="small">All inference requests logged to immutable audit store (CloudWatch + S3 Object Lock, 7-year retention). Schema: request_id, model_version, input_hash, output, latency_ms, requester_id. Sampled review monthly by Internal Audit.</span></div><div class="att-block"><strong>A.8.3</strong> External reporting — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.421Z · <span class="meta">document: <code>external-reporting-policy-v2.pdf</code></span><br><span class="small">External reporting cadence: (1) annual AI Risk Disclosure in the bank Pillar 3 report; (2) ad-hoc supervisory communication via the ECB AnaCredit channel; (3) Article 73 incident reporting via the National Supervisory Authority portal (CY/EL/PT/IE).</span></div><div class="att-block"><strong>A.8.4</strong> Communication of incidents — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.422Z · <span class="meta">document: <code>gimp-ai-runbook-v3.pdf</code></span><br><span class="small">AI incidents are routed via the Group Incident Management Process (GIMP-AI). Severity HIGH/CRITICAL escalated to the CRO within 4 hours; supervisor notification within 15 days per Article 73. Incident BAS-INC-2026-031 (March 2026 bureau outage) closed with this process.</span></div><div class="att-block"><strong>A.9.3</strong> Objectives for responsible use of AI systems — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.422Z · <span class="meta">document: <code>responsible-use-objectives-credit.pdf</code></span><br><span class="small">Responsible-use objectives for credit decisioning: (1) no decisions without human-officer review for declines under 25; (2) every adverse decision accompanied by GDPR Article 22 explanation; (3) appeals path documented in the customer T&amp;Cs.</span></div><div class="att-block"><strong>A.10.2</strong> Allocating responsibilities for AI third parties — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.422Z · <span class="meta">document: <code>third-party-raci-2026.pdf</code></span><br><span class="small">RACI matrix for third-party AI components: bureau data provider (Provider, accountable for SLA + bias monitoring), cloud provider (Operator, infrastructure SLA), AegisAI (Compliance attestation tool). Reviewed at vendor onboarding and annually.</span></div><div class="att-block"><strong>A.10.3</strong> Suppliers — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.423Z · <span class="meta">document: <code>supplier-register-ai-2026.pdf</code></span><br><span class="small">Active AI suppliers (3): credit bureau (Experian Greece, contract BAS-EXP-2024-12), cloud (AWS Frankfurt, BAS-AWS-2023-04), AegisAI (BAS-AGS-2026-01). Each contract includes data-protection addendum, audit-right clause, and 90-day exit plan.</span></div><div class="att-block"><strong>A.10.4</strong> Customers — attested by cco@hellenic-atlantic.example on 2026-05-06T13:50:35.423Z · <span class="meta">document: <code>customer-disclosure-credit-ai-v8.pdf</code></span><br><span class="small">Customer-facing communication of AI use complies with the Bank Customer Agreement v8 (clauses 14.3–14.7) and the GDPR Article 22 disclosure standard. Plain-language explanation provided with every adverse credit decision.</span></div>
+<h3>Full coverage matrix</h3>
+<table><thead><tr><th>Control</th><th>Name</th><th>Status</th><th>Auto rules</th><th>Attestation</th></tr></thead><tbody><tr>
+        <td><code>A.2.2</code></td>
+        <td>AI policy</td>
+        <td class="pass">PASS</td>
+        <td>5</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.2.3</code></td>
+        <td>Alignment with other organizational policies</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.3.2</code></td>
+        <td>AI roles and responsibilities</td>
+        <td class="pass">PASS</td>
+        <td>2</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.3.3</code></td>
+        <td>Reporting of concerns</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.4.2</code></td>
+        <td>Resources for AI systems</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.4.3</code></td>
+        <td>Tooling resources</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.4.4</code></td>
+        <td>System and computing resources</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.4.5</code></td>
+        <td>Human resources</td>
+        <td class="pass">PASS</td>
+        <td>2</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.4.6</code></td>
+        <td>Data resources</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.5.2</code></td>
+        <td>AI system impact assessment process</td>
+        <td class="pass">PASS</td>
+        <td>2</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.5.3</code></td>
+        <td>Documentation of AI system impact assessments</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.5.4</code></td>
+        <td>Assessing AI system impact on individuals or groups</td>
+        <td class="pass">PASS</td>
+        <td>8</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.5.5</code></td>
+        <td>Assessing societal impacts of AI systems</td>
+        <td class="pass">PASS</td>
+        <td>3</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.6.1.2</code></td>
+        <td>Objectives for responsible AI development</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.6.1.3</code></td>
+        <td>Processes for responsible AI design and development</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.6.2.2</code></td>
+        <td>AI system requirements and specification</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.6.2.3</code></td>
+        <td>Documentation of AI system design and development</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.6.2.4</code></td>
+        <td>AI system verification and validation</td>
+        <td class="pass">PASS</td>
+        <td>3</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.6.2.5</code></td>
+        <td>AI system deployment</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.6.2.6</code></td>
+        <td>AI system operation and monitoring</td>
+        <td class="pass">PASS</td>
+        <td>3</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.6.2.7</code></td>
+        <td>AI system technical documentation</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.6.2.8</code></td>
+        <td>AI system event logs</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.7.2</code></td>
+        <td>Data management process</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.7.3</code></td>
+        <td>Acquisition of data</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.7.4</code></td>
+        <td>Quality of data for AI systems</td>
+        <td class="pass">PASS</td>
+        <td>2</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.7.5</code></td>
+        <td>Data provenance</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.7.6</code></td>
+        <td>Data preparation</td>
+        <td class="pass">PASS</td>
+        <td>3</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.8.2</code></td>
+        <td>System documentation and information for users</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.8.3</code></td>
+        <td>External reporting</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.8.4</code></td>
+        <td>Communication of incidents</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.8.5</code></td>
+        <td>Information for interested parties</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.9.2</code></td>
+        <td>Processes for responsible use of AI systems</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.9.3</code></td>
+        <td>Objectives for responsible use of AI systems</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.9.4</code></td>
+        <td>Intended use of the AI system</td>
+        <td class="pass">PASS</td>
+        <td>1</td>
+        <td>—</td>
+      </tr><tr>
+        <td><code>A.10.2</code></td>
+        <td>Allocating responsibilities for AI third parties</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.10.3</code></td>
+        <td>Suppliers</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr><tr>
+        <td><code>A.10.4</code></td>
+        <td>Customers</td>
+        <td class="pass">MANUAL_ATTESTED</td>
+        <td>0</td>
+        <td>cco@hellenic-atlantic.example</td>
+      </tr></tbody></table>
 <h2>10. Cryptographic verification</h2>
+<p class="meta">This signature attests that the underlying <code>ComplianceSnapshot</code> has not been modified since evaluation. It does <strong>not</strong> attest to the truth of the underlying claims — that depends on the integrity of the submitted evidence, which is bound by the Evidence Merkle root below.</p>
 <table>
-  <tr><th>Snapshot ID</th><td class="stamp">dfb9fff1-6b1c-53e6-8bf8-75667bad1a9d</td></tr>
-  <tr><th>Signing key ID</th><td class="stamp">84e438f7b7d55898</td></tr>
-  <tr><th>Evidence Merkle root</th><td class="stamp">4d2a986ac5859538417a23b0e9fa70b3e38b340dd538cc834f5f60bf3f457b3e</td></tr>
+  <tr><th>Snapshot ID</th><td class="stamp">e0a3c587-9686-5ede-b577-65b439191122</td></tr>
+  <tr><th>Signing key ID</th><td class="stamp">cd49650841bbce84</td></tr>
+  <tr><th>Evidence Merkle root</th><td class="stamp">b2ebe1d874ec3aa95b7f3d67f3748541c983483b2c695960c145c629ae812939</td></tr>
   <tr><th>Parameter set hash</th><td class="stamp">44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a</td></tr>
-  <tr><th>Signature</th><td class="stamp">wzF1iRVgiOxsEltHZSDZG/X1rVrdfGzN9wi3sxUJ2z2RbIthxjthlUuVYVRP7AgC8vN8G3OddEzG3m1400k/Bw==</td></tr>
+  <tr><th>Signature (Ed25519)</th><td class="stamp">8SfwKQzBFi3COjQ5fviXrHVortiEwEgsTWck/19jCozBP7V2e7MDBjgj9v7E5SMNQHibzHHsXr+TXN7vCqI7AA==</td></tr>
 </table>
 </body>
 </html>

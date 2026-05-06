@@ -19,7 +19,9 @@ import {
   MonitoringSignal,
   MonitoringSignalSchema,
   AuditEntry,
-  AuditEntrySchema
+  AuditEntrySchema,
+  ManualAttestation,
+  ManualAttestationSchema
 } from '../domain/types.js';
 import { VaultStorage } from '../services/evidence-vault.js';
 import { RegistryStorage } from '../services/system-registry.js';
@@ -27,6 +29,7 @@ import { SnapshotStorage } from '../services/snapshot-store.js';
 import { FRIAStorage } from '../services/fria.js';
 import { MonitoringStorage } from '../services/monitoring.js';
 import { AuditStorage } from '../services/audit-log.js';
+import { AttestationStorage } from '../services/attestations.js';
 
 export interface DbHandle {
   db: Database.Database;
@@ -199,6 +202,36 @@ export class SqliteMonitoringStorage implements MonitoringStorage {
     this.h.db
       .prepare('UPDATE monitoring_signals SET data = ? WHERE id = ?')
       .run(JSON.stringify(updated), id);
+  }
+}
+
+export class SqliteAttestationStorage implements AttestationStorage {
+  constructor(private readonly h: DbHandle) {}
+  set(att: ManualAttestation): void {
+    this.h.db
+      .prepare(
+        `INSERT INTO manual_attestations (id, org_id, system_version_ref, control_id, attested_at, data)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(org_id, system_version_ref, control_id)
+         DO UPDATE SET id = excluded.id, attested_at = excluded.attested_at, data = excluded.data`
+      )
+      .run(att.id, att.org_id, att.system_version_ref, att.control_id, att.attested_at, JSON.stringify(att));
+  }
+  list(orgId: string, systemVersionRef: string): ManualAttestation[] {
+    const rows = this.h.db
+      .prepare(
+        'SELECT data FROM manual_attestations WHERE org_id = ? AND system_version_ref = ? ORDER BY control_id ASC'
+      )
+      .all(orgId, systemVersionRef) as Array<{ data: string }>;
+    return rows.map((r) => ManualAttestationSchema.parse(JSON.parse(r.data)));
+  }
+  get(orgId: string, systemVersionRef: string, controlId: string): ManualAttestation | undefined {
+    const row = this.h.db
+      .prepare(
+        'SELECT data FROM manual_attestations WHERE org_id = ? AND system_version_ref = ? AND control_id = ?'
+      )
+      .get(orgId, systemVersionRef, controlId) as { data: string } | undefined;
+    return row ? ManualAttestationSchema.parse(JSON.parse(row.data)) : undefined;
   }
 }
 

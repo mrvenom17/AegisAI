@@ -1,15 +1,20 @@
 /**
  * ISO/IEC 42001 control mapper.
  *
- * For a given ComplianceSnapshot, produce a control-by-control coverage
- * report mapping rule evaluations to ISO 42001 Annex A controls. This is
- * the procurement gate enterprise buyers ask for.
+ * Coverage status is derived from two independent sources:
+ *   - automated rule evaluations from the policy engine
+ *   - signed manual attestations attached to the system version
+ *
+ * A control is considered covered if every applicable automated rule passes
+ * AND there are no applicable rules failing. If no rules apply, a signed
+ * manual attestation (active at snapshot time) makes it MANUAL_ATTESTED.
+ * Otherwise the control is MANUAL_EVIDENCE_REQUIRED — a real gap.
  */
 
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { ComplianceSnapshot, PolicySet } from '../domain/types.js';
+import { ComplianceSnapshot, PolicySet, ManualAttestation } from '../domain/types.js';
 
 export interface ControlCoverage {
   control_id: string;
@@ -20,7 +25,15 @@ export interface ControlCoverage {
     passed: boolean;
     failure_mode: 'WARN' | 'FAIL' | 'BLOCK';
   }>;
-  status: 'PASS' | 'PARTIAL' | 'FAIL' | 'NOT_COVERED';
+  attestation?: {
+    attestation: string;
+    attested_by: string;
+    attested_at: string;
+    document_ref?: string;
+    expires_at?: string;
+    active: boolean;
+  };
+  status: 'PASS' | 'PARTIAL' | 'FAIL' | 'MANUAL_ATTESTED' | 'MANUAL_EVIDENCE_REQUIRED';
 }
 
 export class ISO42001Mapper {
@@ -37,7 +50,12 @@ export class ISO42001Mapper {
     this.catalog = raw.controls;
   }
 
-  coverage(snapshot: ComplianceSnapshot, policySet: PolicySet): ControlCoverage[] {
+  coverage(
+    snapshot: ComplianceSnapshot,
+    policySet: PolicySet,
+    attestations: ManualAttestation[] = [],
+    asOf: string = snapshot.timestamp
+  ): ControlCoverage[] {
     const ruleIndex = new Map<string, { iso: string[]; failure_mode: 'WARN' | 'FAIL' | 'BLOCK' }>();
     for (const rule of policySet.rules) {
       ruleIndex.set(rule.rule_id, {
@@ -46,13 +64,19 @@ export class ISO42001Mapper {
       });
     }
 
+    const attestationsByControl = new Map<string, ManualAttestation>();
+    for (const a of attestations) {
+      if (a.framework !== 'ISO_42001') continue;
+      attestationsByControl.set(a.control_id, a);
+    }
+
     const perControl = new Map<string, ControlCoverage>();
     for (const [controlId, controlName] of Object.entries(this.catalog)) {
       perControl.set(controlId, {
         control_id: controlId,
         control_name: controlName,
         rules: [],
-        status: 'NOT_COVERED'
+        status: 'MANUAL_EVIDENCE_REQUIRED'
       });
     }
 
@@ -72,8 +96,21 @@ export class ISO42001Mapper {
     }
 
     for (const cell of perControl.values()) {
+      const att = attestationsByControl.get(cell.control_id);
+      if (att) {
+        const active = !att.expires_at || Date.parse(asOf) <= Date.parse(att.expires_at);
+        cell.attestation = {
+          attestation: att.attestation,
+          attested_by: att.attested_by,
+          attested_at: att.attested_at,
+          document_ref: att.document_ref,
+          expires_at: att.expires_at,
+          active
+        };
+      }
+
       if (cell.rules.length === 0) {
-        cell.status = 'NOT_COVERED';
+        cell.status = cell.attestation?.active ? 'MANUAL_ATTESTED' : 'MANUAL_EVIDENCE_REQUIRED';
       } else {
         const passes = cell.rules.filter((r) => r.passed).length;
         if (passes === cell.rules.length) cell.status = 'PASS';

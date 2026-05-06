@@ -48,7 +48,23 @@ export const RuleResultSchema = z.object({
   evaluated_at: z.string(),
   evidence_claim_refs: z.array(z.string()),
   parameters_used: z.record(z.unknown()),
-  logic_result: z.unknown().optional()
+  logic_result: z.unknown().optional(),
+  // Substantive evidence inlined into the rule result so the binder can render
+  // actual claim values (AUC, dataset size, threshold), not just PASS/FAIL.
+  // Captured at evaluation time and covered by the snapshot signature.
+  verified_claims_used: z
+    .array(
+      z.object({
+        claim_id: z.string(),
+        claim_type: z.string(),
+        evidence_vault_ref: z.string(),
+        submitted_by: z.string().optional(),
+        source_system: z.string().optional(),
+        observed_at: z.string().optional(),
+        claim_data: z.record(z.unknown())
+      })
+    )
+    .default([])
 });
 export type RuleResult = z.infer<typeof RuleResultSchema>;
 
@@ -146,7 +162,10 @@ export const VerifiedClaimSchema = z.object({
   validation_metadata: z.object({
     schema_version: z.string(),
     validation_errors: z.array(z.string()).optional()
-  })
+  }),
+  submitted_by: z.string().optional(),
+  source_system: z.string().optional(),
+  observed_at: z.string().optional()
 });
 export type VerifiedClaim = z.infer<typeof VerifiedClaimSchema>;
 
@@ -254,7 +273,12 @@ export const FRIASchema = z.object({
     z.object({
       mitigation: z.string(),
       responsible_role: z.string(),
-      review_cadence: z.string()
+      review_cadence: z.string(),
+      // Time-bound mitigations get computed status (ACTIVE/EXPIRED/OVERDUE)
+      // against snapshot timestamp at binder render time.
+      effective_from: z.string().optional(),
+      duration_days: z.number().int().positive().optional(),
+      valid_until: z.string().optional()
     })
   ),
   human_oversight_measures: z.array(z.string()),
@@ -287,6 +311,27 @@ export const MonitoringSignalSchema = z.object({
   ingested_at: z.string()
 });
 export type MonitoringSignal = z.infer<typeof MonitoringSignalSchema>;
+
+// ============================================================================
+// Manual attestations — signed, scoped to a system version + control
+// ============================================================================
+
+export const ManualAttestationSchema = z.object({
+  id: z.string().uuid(),
+  org_id: z.string(),
+  system_version_ref: z.string(),
+  control_id: z.string(),
+  framework: z.enum(['ISO_42001', 'EU_AI_ACT']).default('ISO_42001'),
+  attestation: z.string().min(10),
+  attested_by: z.string().email(),
+  attested_at: z.string(),
+  document_ref: z.string().optional(),
+  document_hash: z.string().optional(),
+  expires_at: z.string().optional(),
+  signature: z.string(),
+  signing_key_id: z.string()
+});
+export type ManualAttestation = z.infer<typeof ManualAttestationSchema>;
 
 // ============================================================================
 // Audit log

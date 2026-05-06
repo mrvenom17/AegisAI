@@ -168,7 +168,10 @@ export class EvidenceVerifier {
       claim_data: claimData,
       verified_at: new Date().toISOString(),
       verifier_version: this.verifierVersion,
-      validation_metadata: { schema_version: '0.1' }
+      validation_metadata: { schema_version: '0.1' },
+      submitted_by: evidence.metadata.submitted_by,
+      source_system: evidence.metadata.source_system,
+      observed_at: evidence.metadata.observed_at
     };
 
     const validated = Object.freeze(VerifiedClaimSchema.parse(claim));

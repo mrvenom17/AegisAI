@@ -5,7 +5,7 @@
 
 import { openDatabase, DbHandle, SqliteVaultStorage, SqliteRegistryStorage,
   SqliteSnapshotStorage, SqliteFRIAStorage, SqliteMonitoringStorage,
-  SqliteAuditStorage } from '../storage/sqlite.js';
+  SqliteAuditStorage, SqliteAttestationStorage } from '../storage/sqlite.js';
 import { OrgStore, Organization } from '../storage/orgs.js';
 import { EvidenceVault } from '../services/evidence-vault.js';
 import { EvidenceVerifier, StructuredJSONAdapter, DocumentAdapter,
@@ -20,6 +20,7 @@ import { AuditLog } from '../services/audit-log.js';
 import { RiskClassifier } from '../services/risk-classifier.js';
 import { ISO42001Mapper } from '../services/iso-42001-mapper.js';
 import { DocGen } from '../services/docgen.js';
+import { AttestationService } from '../services/attestations.js';
 
 export interface AppContext {
   handle: DbHandle;
@@ -49,6 +50,7 @@ export interface TenantContext {
   auditLog: AuditLog;
   classifier: RiskClassifier;
   docGen: DocGen;
+  attestations: AttestationService;
 }
 
 export function createTenantContext(app: AppContext, org: Organization): TenantContext {
@@ -78,9 +80,17 @@ export function createTenantContext(app: AppContext, org: Organization): TenantC
   );
   const classifier = new RiskClassifier();
   const docGen = new DocGen();
+  const attestations = new AttestationService({
+    storage: new SqliteAttestationStorage(app.handle),
+    privateKeyPem: org.signing_private_key_pem,
+    publicKeyPem: org.signing_public_key_pem,
+    signingKeyId: org.signing_key_id,
+    auditLog
+  });
 
   return {
     org, vault, verifier, registry, snapshotStore, policyEngine,
-    orchestrator, fria, monitoring, auditLog, classifier, docGen
+    orchestrator, fria, monitoring, auditLog, classifier, docGen,
+    attestations
   };
 }

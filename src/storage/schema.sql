@@ -65,6 +65,17 @@ CREATE TABLE IF NOT EXISTS monitoring_signals (
 );
 CREATE INDEX IF NOT EXISTS idx_ms_sys ON monitoring_signals(org_id, system_version_ref, observed_at DESC);
 
+CREATE TABLE IF NOT EXISTS manual_attestations (
+  id TEXT PRIMARY KEY,
+  org_id TEXT NOT NULL REFERENCES organizations(id),
+  system_version_ref TEXT NOT NULL,
+  control_id TEXT NOT NULL,
+  attested_at TEXT NOT NULL,
+  data TEXT NOT NULL,
+  UNIQUE (org_id, system_version_ref, control_id)
+);
+CREATE INDEX IF NOT EXISTS idx_att_sys ON manual_attestations(org_id, system_version_ref);
+
 CREATE TABLE IF NOT EXISTS audit_entries (
   rowid_seq INTEGER PRIMARY KEY AUTOINCREMENT,
   seq INTEGER NOT NULL,

@@ -267,7 +267,10 @@ export async function buildServer() {
       mitigations: z.array(z.object({
         mitigation: z.string(),
         responsible_role: z.string(),
-        review_cadence: z.string()
+        review_cadence: z.string(),
+        effective_from: z.string().optional(),
+        duration_days: z.number().int().positive().optional(),
+        valid_until: z.string().optional()
       })),
       human_oversight_measures: z.array(z.string())
     }).parse(req.body);
@@ -334,6 +337,42 @@ export async function buildServer() {
     return { ok: true };
   });
 
+  // ----- Manual attestations -----
+  server.post('/v1/systems/:id/attestations', async (req, reply) => {
+    const t = tenant(req);
+    const params = z.object({ id: z.string() }).parse(req.params);
+    const body = z.object({
+      control_id: z.string(),
+      framework: z.enum(['ISO_42001', 'EU_AI_ACT']).optional(),
+      attestation: z.string().min(10),
+      attested_by: z.string().email(),
+      document_ref: z.string().optional(),
+      document_hash: z.string().optional(),
+      expires_at: z.string().optional()
+    }).parse(req.body);
+    const sv = t.registry.getSystemVersion(params.id, t.org.id);
+    const att = t.attestations.create({
+      orgId: t.org.id,
+      systemVersionRef: sv.id,
+      controlId: body.control_id,
+      framework: body.framework,
+      attestation: body.attestation,
+      attestedBy: body.attested_by,
+      documentRef: body.document_ref,
+      documentHash: body.document_hash,
+      expiresAt: body.expires_at,
+      actor: 'api'
+    });
+    reply.send(att);
+  });
+
+  server.get('/v1/systems/:id/attestations', async (req) => {
+    const t = tenant(req);
+    const params = z.object({ id: z.string() }).parse(req.params);
+    const sv = t.registry.getSystemVersion(params.id, t.org.id);
+    return t.attestations.list(t.org.id, sv.id);
+  });
+
   // ----- Conformity binder (Annex IV) -----
   server.get('/v1/binders/:snapshotId', async (req, reply) => {
     const t = tenant(req);
@@ -353,15 +392,18 @@ export async function buildServer() {
     const fria = t.fria.list(t.org.id).find((f) => f.system_version_ref === sys.id);
 
     const policySets = Object.entries(PACK_REGISTRY).map(([, file]) => loadPack(file));
-    const isoCoverage = app.isoMapper.coverage(snap, {
-      ...policySets[0],
-      rules: policySets.flatMap((p) => p.rules)
-    });
+    const attestations = t.attestations.list(t.org.id, sys.id);
+    const isoCoverage = app.isoMapper.coverage(
+      snap,
+      { ...policySets[0], rules: policySets.flatMap((p) => p.rules) },
+      attestations,
+      snap.timestamp
+    );
     const recentSignals = t.monitoring.list(t.org.id, sys.id).slice(0, 50);
 
     const html = t.docGen.generateAnnexIV({
       system: sys, classification, snapshot: snap,
-      policySets, fria, isoCoverage, recentSignals
+      policySets, fria, isoCoverage, recentSignals, attestations
     });
     reply.type('text/html').send(html);
   });
